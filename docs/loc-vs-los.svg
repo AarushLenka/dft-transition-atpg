@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 650" role="img" aria-labelledby="title desc">
+  <title id="title">LOC and LOS transition-test timing</title>
+  <desc id="desc">Two timing rows compare launch-on-capture, where scan enable is low before two functional-speed clock pulses, with launch-on-shift, where the final scan shift launches the transition and scan enable changes before capture.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f4f6f8; }
+      .panel { fill: #fff; stroke: #d8dee6; stroke-width: 1.5; }
+      .ink { fill: #18232f; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      .muted { fill: #627182; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      .title { font-size: 28px; font-weight: 700; letter-spacing: -.4px; }
+      .subtitle { font-size: 14px; }
+      .row-title { font-size: 17px; font-weight: 700; }
+      .label { font-size: 13px; font-weight: 650; }
+      .small { font-size: 12px; }
+      .tiny { font-size: 11px; }
+      .axis { stroke: #d7dfe7; stroke-width: 1; }
+      .clock { fill: none; stroke: #25415a; stroke-width: 3; stroke-linejoin: round; }
+      .enable { fill: none; stroke: #be5b22; stroke-width: 3; stroke-linejoin: round; }
+      .data { fill: none; stroke: #16806a; stroke-width: 3.5; stroke-linejoin: round; }
+      .guide { stroke: #8796a5; stroke-width: 1.2; stroke-dasharray: 4 5; }
+      .window { fill: #e7f2ef; }
+      .badge { fill: #eef2f5; }
+      .accent { fill: #c14b35; }
+      .callout { fill: #fff5e9; stroke: #e9c9a4; stroke-width: 1; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8796a5"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1100" height="650"/>
+  <text class="ink title" x="56" y="54">Two ways to launch a transition</text>
+  <text class="muted subtitle" x="56" y="80">The capture edge checks whether the launched value reached the destination within one functional period.</text>
+
+  <rect class="panel" x="40" y="104" width="1020" height="235" rx="12"/>
+  <text class="ink row-title" x="64" y="137">LOC · Launch-on-Capture</text>
+  <rect class="badge" x="836" y="118" width="195" height="27" rx="6"/>
+  <text class="muted small" x="852" y="136">SE settles before launch</text>
+  <rect class="window" x="565" y="158" width="240" height="142" rx="7"/>
+  <text class="muted tiny" x="578" y="176">FUNCTIONAL-SPEED CAPTURE</text>
+  <text class="muted label" x="64" y="205">CLK</text>
+  <text class="muted label" x="64" y="249">SE</text>
+  <text class="muted label" x="64" y="293">Path value</text>
+  <line class="axis" x1="170" y1="205" x2="1010" y2="205"/>
+  <line class="axis" x1="170" y1="249" x2="1010" y2="249"/>
+  <line class="axis" x1="170" y1="293" x2="1010" y2="293"/>
+  <path class="clock" d="M170 205 H224 V185 H244 V205 H285 V185 H305 V205 H590 V185 H610 V205 H760 V185 H780 V205 H1010"/>
+  <path class="enable" d="M170 235 H390 V257 H1010"/>
+  <path class="data" d="M170 293 H610 C625 293 630 271 648 271 H1010"/>
+  <line class="guide" x1="600" y1="180" x2="600" y2="310"/>
+  <line class="guide" x1="770" y1="180" x2="770" y2="310"/>
+  <text class="ink label" x="574" y="326">Launch</text>
+  <text class="ink label" x="748" y="326">Capture</text>
+  <text class="muted tiny" x="209" y="222">scan shift</text>
+  <text class="muted tiny" x="628" y="264">0 → 1 propagates</text>
+  <line class="guide" x1="610" y1="158" x2="770" y2="158" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text class="muted tiny" x="657" y="153">one functional period</text>
+
+  <rect class="panel" x="40" y="358" width="1020" height="235" rx="12"/>
+  <text class="ink row-title" x="64" y="391">LOS · Launch-on-Shift</text>
+  <rect class="callout" x="808" y="372" width="223" height="27" rx="6"/>
+  <text class="accent small" x="823" y="390">SE transition is timing-critical</text>
+  <rect class="window" x="565" y="412" width="240" height="142" rx="7"/>
+  <text class="muted tiny" x="578" y="430">AT-SPEED LAUNCH / CAPTURE</text>
+  <text class="muted label" x="64" y="459">CLK</text>
+  <text class="muted label" x="64" y="503">SE</text>
+  <text class="muted label" x="64" y="547">Path value</text>
+  <line class="axis" x1="170" y1="459" x2="1010" y2="459"/>
+  <line class="axis" x1="170" y1="503" x2="1010" y2="503"/>
+  <line class="axis" x1="170" y1="547" x2="1010" y2="547"/>
+  <path class="clock" d="M170 459 H224 V439 H244 V459 H285 V439 H305 V459 H420 V439 H440 V459 H600 V439 H620 V459 H760 V439 H780 V459 H1010"/>
+  <path class="enable" d="M170 481 H620 V525 H1010"/>
+  <path class="data" d="M170 547 H620 C635 547 640 525 658 525 H1010"/>
+  <line class="guide" x1="610" y1="434" x2="610" y2="564"/>
+  <line class="guide" x1="770" y1="434" x2="770" y2="564"/>
+  <text class="ink label" x="566" y="580">Final shift launches</text>
+  <text class="ink label" x="748" y="580">Capture</text>
+  <text class="muted tiny" x="225" y="476">slow scan shift</text>
+  <text class="muted tiny" x="632" y="520">0 → 1 propagates</text>
+  <line class="guide" x1="620" y1="412" x2="770" y2="412" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text class="muted tiny" x="654" y="407">one functional period</text>
+
+  <circle cx="64" cy="622" r="4" fill="#25415a"/>
+  <text class="muted tiny" x="74" y="626">clock</text>
+  <circle cx="136" cy="622" r="4" fill="#be5b22"/>
+  <text class="muted tiny" x="146" y="626">scan enable</text>
+  <circle cx="243" cy="622" r="4" fill="#16806a"/>
+  <text class="muted tiny" x="253" y="626">transition at the fault path</text>
+  <text class="muted tiny" x="1010" y="626" text-anchor="end">Conceptual waveforms; confirm the generated sequence in Modus.</text>
+</svg>

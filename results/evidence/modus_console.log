@@ -1,0 +1,1875 @@
+Script started on 2026-11-19 00:18:00+05:30
+[3J[H[2J
+Welcome to Cadence tools Suite (C2S)
+
+Starting Modus DFT Software Solution Tcl UI.
+Type "exit" to return to your previous environment.
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: Modus_common_ui/6F3B8757300060F19D3C
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+Could not connect to display: 
+GUI mode requires a valid DISPLAY.
+Only command-line mode will be available during this Modus session.
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+
+ 
+Copyright (C) 2002-2022 Cadence Design Systems Inc. All Rights Reserved. 
+Cadence and the Cadence logo are registered trademarks and Modus is a trademark 
+of Cadence Design Systems, Inc. in the United States and other countries.
+
+Type 'help legal_notices' for third party license notices. 
+
+Version : 22.10-p008_1, built Oct 18 2022 (linux26_64)
+Options : -files scripts/run_modus.tcl
+Date    : Thu, November 19 00:18:03 2026
+Host    : cadence-server.vit.ac.in (x86_64 Linux 4.18.0-477.21.1.el8_8.x86_64) (16*Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz 36864KB)
+OS      : Red Hat Enterprise Linux release 8.8 (Ootpa)
+
+#@ Processing -files option
+@modus:root:/ 1>  source scripts/run_modus.tcl
+#@ Begin verbose source scripts/run_modus.tcl
+@file(scripts/run_modus.tcl) 32: set script_path [file normalize [info script]]
+@file(scripts/run_modus.tcl) 33: set repo_root [file dirname [file dirname $script_path]]
+@file(scripts/run_modus.tcl) 35: proc p3_path {root env_name fallback} {
+    if {[info exists ::env($env_name)] && $::env($env_name) ne ""} {
+        set path $::env($env_name)
+    } else {
+        set path $fallback
+    }
+    if {[file pathtype $path] ne "absolute"} {
+        set path [file join $root $path]
+    }
+    return [file normalize $path]
+}
+@file(scripts/run_modus.tcl) 48: set netlist     [p3_path $repo_root P3_NETLIST     ../dft-scan-atpg/p2_scan/runs/c1/top_scan.v]
+@file(scripts/run_modus.tcl) 49: set cell_models [p3_path $repo_root P3_CELL_MODELS ../dft-scan-atpg/lib/cells.v]
+@file(scripts/run_modus.tcl) 50: set loc_assign  [p3_path $repo_root P3_LOC_PINASSIGN inputs/top_loc.pinassign]
+@file(scripts/run_modus.tcl) 51: set los_assign  [p3_path $repo_root P3_LOS_PINASSIGN inputs/top_los.pinassign]
+@file(scripts/run_modus.tcl) 53: set clock_constraints ""
+@file(scripts/run_modus.tcl) 54: if {[info exists ::env(P3_CLOCK_CONSTRAINTS)] && $::env(P3_CLOCK_CONSTRAINTS) ne ""} {
+    set clock_constraints [p3_path $repo_root P3_CLOCK_CONSTRAINTS $::env(P3_CLOCK_CONSTRAINTS)]
+    if {![file isfile $clock_constraints]} {
+        error "Clock-constraints file is missing: $clock_constraints"
+    }
+}
+@file(scripts/run_modus.tcl) 61: if {[info exists ::env(P3_TOP)] && $::env(P3_TOP) ne ""} {
+    set top $::env(P3_TOP)
+} else {
+    set top top
+}
+@file(scripts/run_modus.tcl) 67: if {[info exists ::env(P3_RUN_DIR)] && $::env(P3_RUN_DIR) ne ""} {
+    set run_dir [p3_path $repo_root P3_RUN_DIR runs/manual-run]
+} else {
+    set stamp [clock format [clock seconds] -format %Y%m%d-%H%M%S]
+    set run_dir [file join $repo_root runs modus-$stamp]
+}
+@file(scripts/run_modus.tcl) 74: foreach input [list $netlist $cell_models $loc_assign $los_assign] {
+    if {![file isfile $input]} {
+        error "Required input is missing: $input. See inputs/README.md and README.md."
+    }
+}
+@file(scripts/run_modus.tcl) 81: set workdir $run_dir
+@file(scripts/run_modus.tcl) 82: set vector_dir [file join $run_dir vectors]
+@file(scripts/run_modus.tcl) 83: set log_dir [file join $run_dir logs]
+@file(scripts/run_modus.tcl) 84: file mkdir $workdir
+@file(scripts/run_modus.tcl) 85: file mkdir $vector_dir
+@file(scripts/run_modus.tcl) 86: file mkdir $log_dir
+@file(scripts/run_modus.tcl) 88: puts "Project 3 run directory: $run_dir"
+Project 3 run directory: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804
+@file(scripts/run_modus.tcl) 89: puts "Design top: $top"
+Design top: top
+@file(scripts/run_modus.tcl) 90: puts "Netlist: $netlist"
+Netlist: /home/userdata/23bec0325/dft-projects/dft-scan-atpg/p2_scan/runs/c1/top_scan.v
+@file(scripts/run_modus.tcl) 91: puts "Cell models: $cell_models"
+Cell models: /home/userdata/23bec0325/dft-projects/dft-scan-atpg/lib/cells.v
+@file(scripts/run_modus.tcl) 92: puts "Dynamic clocking: [expr {$clock_constraints eq "" ? "dynseqfilter only (untimed flow)" : "clockconstraints $clock_constraints"}]"
+Dynamic clocking: dynseqfilter only (untimed flow)
+@file(scripts/run_modus.tcl) 94: build_model \
+    -designsource $netlist \
+    -designtop $top \
+    -techlib $cell_models \
+    -allowmissingmodules yes \
+    -workdir $workdir
+Starting Command: build_model 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_build_model_111926001804-146009000 [end TDA_015]
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+FlexNet Licensing checkout error: No such feature exists.
+Feature:       Modus_Test
+License path:  5280@14.139.1.126:1717@10.10.2.131:
+FlexNet Licensing error:-5,147.  System Error: 2 "No such file or directory"
+license file(s):  5280@14.139.1.126 1717@10.10.2.131
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+INFO (TEI-195): Build Model - Controller starting: [end TEI_195] 
+
+
+Search Order  1:  "/home/userdata/23bec0325/dft-projects/dft-scan-atpg/p2_scan/runs/c1/top_scan.v"
+Search Order  2:  "/home/userdata/23bec0325/dft-projects/dft-scan-atpg/lib/cells.v"
+
+
+
+Reading Verilog data from /home/userdata/23bec0325/dft-projects/dft-scan-atpg/p2_scan/runs/c1/top_scan.v
+
+Verilog Parser complete - 2 modules, 0 gates, 0 user defined primitives.
+
+
+Reading Verilog data from /home/userdata/23bec0325/dft-projects/dft-scan-atpg/lib/cells.v
+
+Verilog Parser complete - 480 modules, 1855 gates, 3 user defined primitives.
+
+
+
+INFO (TEI-196): Build Model - Hierarchical Model Build starting: [end TEI_196] 
+
+WARNING (TEI-110): Pin 'NOTIFIER' of 'cell udp_dff' has no external net connection for any usage in the design. Cell contents file: '/home/userdata/23bec0325/dft-projects/dft-scan-atpg/lib/cells.v'.  [end TEI_110] 
+
+
+Number of blocks in the hierarchical model is: 4,817.
+
+Number of technology library cell instances in the hierarchical model is: 522.
+
+
+INFO (TEI-197): Build Model - Hierarchical Model Build completed. [end TEI_197] 
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+
+
+INFO (TEI-198): Build Model - Flat Model Build starting: [end TEI_198] 
+
+ defaultTIE = X
+ defaultDFN = T
+
+
+INFO (TLM-055): Design Summary
+                --------------
+
+Hierarchical Model:                  Flattened Model:
+          4,817  Blocks                       2,745  Blocks
+         14,989  Pins                         2,745  Nodes
+          8,430  Nets
+
+Primary Inputs:                      Primary Outputs:
+         27  Input Only                        16  Output Only
+          0  Input/Output                       0  Input/Output
+         27  Total Inputs                      16  Total Outputs
+
+Tied Nets:                           Dotted Nets:
+        124  Tied to 0                          0  Two-State
+         65  Tied to 1                          0  Three-State
+          0  Tied to X                          0  Total Dotted Nets
+        189  Total Tied Nets
+
+Selected Primitive Functions:
+          0  Clock Chopper (CHOP) primitives 
+          0  RAMs
+          0  ROMs
+          0  TSDs
+          0  Resistors
+          0  Transistors
+        229  MUX2s
+          0  Latches
+
+
+        129  Rising  Edge Flop w/Set-Dominant and Reset Port
+        129  Total Flops
+
+        522  Technology Library Cell Instances
+
+[end TLM_055] 
+Optimization removed logic for 3 of 50 cells in this design.
+
+Optimization removed a total of 262 tied Latch Ports.
+Optimization removed a total of 388 non-controlling inputs.
+Optimization removed a total of 1,106 dangling logic nodes.
+
+
+
+INFO (TEI-199): Build Model - Flat Model Build completed.  [end TEI_199] 
+
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =          101,738,240  bytes
+
+                      CPU Time =    0:00:00.87
+                  Elapsed Time =    0:00:01.21                    [end TDA_001]
+
+
+
+INFO (TEI-200): Build Model - Controller completed. [end TEI_200] 
+
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      1 INFO (TEI-195): Build Model - Controller starting:  
+      1 INFO (TEI-196): Build Model - Hierarchical Model Build starting:  
+      1 INFO (TEI-197): Build Model - Hierarchical Model Build completed.  
+      1 INFO (TEI-198): Build Model - Flat Model Build starting:  
+      1 INFO (TEI-199): Build Model - Flat Model Build completed.   
+      1 INFO (TEI-200): Build Model - Controller completed.  
+      1 INFO (TLM-055): Design Summary
+
+  WARNING Messages...
+      1 WARNING (TEI-110): Pin 'NOTIFIER' of 'cell udp_dff' has no external net connection for any usage in the design. Cell contents file: '/home/userdata/23bec0325/dft-projects/dft-scan-atpg/lib/cells.v'.   
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+@file(scripts/run_modus.tcl) 103: build_testmode \
+    -testmode TDF_LOC \
+    -assignfile $loc_assign \
+    -modedef FULLSCAN \
+    -workdir $workdir
+Starting Command: build_testmode 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_build_testmode_TDF_LOC_111926001809-949315000 [end TDA_015]
+
+MODEDEFPATH set to:  /home/cadence/install_RB_8.7/MODUS221/tools.lnx86/tb/defaults/rules/modedef 
+TDRPATH set to: /home/cadence/install_RB_8.7/MODUS221/tools.lnx86/tb/defaults/rules/tdr 
+
+Modus Build Test Mode(s) beginning...
+
+   TDR NAME      =  dummy.tdr 
+
+   SCAN_TYPE     =  GSD 
+   BOUNDARY      =  NONE 
+   IN            =  PI 
+   OUT           =  PO 
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+FlexNet Licensing checkout error: No such feature exists.
+Feature:       Modus_Test
+License path:  5280@14.139.1.126:1717@10.10.2.131:
+FlexNet Licensing error:-5,147.  System Error: 2 "No such file or directory"
+license file(s):  5280@14.139.1.126 1717@10.10.2.131
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+INFO (TTM-391): A default modeinit sequence will be generated.   [end TTM_391] 
+INFO (TTM-387): A default scanop sequence will be generated.   [end TTM_387] 
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+INFO (THM-814): Testmode contains 97.74% active logic,  2.26% inactive logic and  0.00% constraint logic.   [end THM_814] 
+INFO (TTM-357): There are 1 scan chains which are controllable and observable.   [end TTM_357] 
+
+There are no PPIs for Test Mode:  TDF_LOC
+
+Information for Test Mode:  TDF_LOC
+-------------------------
+
+         Scan Type = GSD
+
+
+ Latch Summary for Test Mode:  TDF_LOC
+ Latch Type                #Active   #Inactive       Total
+ ---------------------   ---------   ---------   ---------
+ Test Constraint (TC)            0           0           0 
+ Scan Enable     (SE)            0           0           0 
+ Fixed Value     (FV)            0           0           0 
+ Floating                        0           0           0 
+ Finite State    (FSM)           0           0           0 
+
+INFO (TTM-800): build_testmode has created mode TDF_LOC. [end TTM_800] 
+
+Test Function Pin Information for Test Mode:  TDF_LOC
+-------------------------------------------
+
+          2  SC    (System  Clock)             Pins
+          0  PC    (P Shift Clock)             Pins
+          1  EC    (E Shift Clock)             Pins
+
+          0  OSC   (Oscillator)                Pins
+
+          0  TI    (Test Inhibit)              Pins
+          1  SE    (Scan Enable)               Pins
+          0  CI    (Clock Isolation)           Pins
+          0  OI    (Output Inhibit)            Pins
+
+          1  SI    (Scan Input)                Pins
+          1  SO    (Scan Output)               Pins
+
+  Pin Index    Type Test Function                         Pin Name / Net Name
+  ---------    ---- ----------------------------------    -------------------
+         16      PI  +SC                                  rst_n / rst_n
+         13      PI  -EC  -SC                             clk / clk
+          0      PI  +SE                                  SE / SE
+         14      PI   SI                                  dft_sdi_1 / dft_sdi_1
+         27      PO   SO                                  dft_sdo_1 / dft_sdo_1
+
+
+            Cumulative Time in hours:minutes:seconds:
+                   CPU Time =   0:00:00.07
+               Elapsed Time =   0:00:05.99
+
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      1 INFO (THM-814): Testmode contains 97.74% active logic,  2.26% inactive logic and  0.00% constraint logic.    
+      1 INFO (TTM-357): There are 1 scan chains which are controllable and observable.    
+      1 INFO (TTM-387): A default scanop sequence will be generated.    
+      1 INFO (TTM-391): A default modeinit sequence will be generated.    
+      1 INFO (TTM-800): build_testmode has created mode TDF_LOC.  
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+@file(scripts/run_modus.tcl) 109: build_testmode \
+    -testmode TDF_LOS \
+    -assignfile $los_assign \
+    -modedef FULLSCAN \
+    -workdir $workdir
+Starting Command: build_testmode 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_build_testmode_TDF_LOS_111926001816-986020000 [end TDA_015]
+
+MODEDEFPATH set to:  /home/cadence/install_RB_8.7/MODUS221/tools.lnx86/tb/defaults/rules/modedef 
+TDRPATH set to: /home/cadence/install_RB_8.7/MODUS221/tools.lnx86/tb/defaults/rules/tdr 
+
+Modus Build Test Mode(s) beginning...
+
+   TDR NAME      =  dummy.tdr 
+
+   SCAN_TYPE     =  GSD 
+   BOUNDARY      =  NONE 
+   IN            =  PI 
+   OUT           =  PO 
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+FlexNet Licensing checkout error: No such feature exists.
+Feature:       Modus_Test
+License path:  5280@14.139.1.126:1717@10.10.2.131:
+FlexNet Licensing error:-5,147.  System Error: 2 "No such file or directory"
+license file(s):  5280@14.139.1.126 1717@10.10.2.131
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+INFO (TTM-391): A default modeinit sequence will be generated.   [end TTM_391] 
+INFO (TTM-387): A default scanop sequence will be generated.   [end TTM_387] 
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+INFO (THM-814): Testmode contains 97.74% active logic,  2.26% inactive logic and  0.00% constraint logic.   [end THM_814] 
+INFO (TTM-357): There are 1 scan chains which are controllable and observable.   [end TTM_357] 
+
+There are no PPIs for Test Mode:  TDF_LOS
+
+Information for Test Mode:  TDF_LOS
+-------------------------
+
+         Scan Type = GSD
+
+
+ Latch Summary for Test Mode:  TDF_LOS
+ Latch Type                #Active   #Inactive       Total
+ ---------------------   ---------   ---------   ---------
+ Test Constraint (TC)            0           0           0 
+ Scan Enable     (SE)            0           0           0 
+ Fixed Value     (FV)            0           0           0 
+ Floating                        0           0           0 
+ Finite State    (FSM)           0           0           0 
+
+INFO (TTM-800): build_testmode has created mode TDF_LOS. [end TTM_800] 
+
+Test Function Pin Information for Test Mode:  TDF_LOS
+-------------------------------------------
+
+          2  SC    (System  Clock)             Pins
+          0  PC    (P Shift Clock)             Pins
+          1  EC    (E Shift Clock)             Pins
+
+          0  OSC   (Oscillator)                Pins
+
+          0  TI    (Test Inhibit)              Pins
+          1  SE    (Scan Enable)               Pins
+          0  CI    (Clock Isolation)           Pins
+          0  OI    (Output Inhibit)            Pins
+
+          1  SI    (Scan Input)                Pins
+          1  SO    (Scan Output)               Pins
+
+  Pin Index    Type Test Function                         Pin Name / Net Name
+  ---------    ---- ----------------------------------    -------------------
+         16      PI  +SC                                  rst_n / rst_n
+         13      PI  -EC  -SC                             clk / clk
+          0      PI  +SE                                  SE / SE
+         14      PI   SI                                  dft_sdi_1 / dft_sdi_1
+         27      PO   SO                                  dft_sdo_1 / dft_sdo_1
+
+
+            Cumulative Time in hours:minutes:seconds:
+                   CPU Time =   0:00:00.07
+               Elapsed Time =   0:00:06.05
+
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      1 INFO (THM-814): Testmode contains 97.74% active logic,  2.26% inactive logic and  0.00% constraint logic.    
+      1 INFO (TTM-357): There are 1 scan chains which are controllable and observable.    
+      1 INFO (TTM-387): A default scanop sequence will be generated.    
+      1 INFO (TTM-391): A default modeinit sequence will be generated.    
+      1 INFO (TTM-800): build_testmode has created mode TDF_LOS.  
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+@file(scripts/run_modus.tcl) 115: verify_test_structures -testmode TDF_LOC -workdir $workdir
+Starting Command: verify_test_structures 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_verify_test_structures_TDF_LOC_111926001824-091215000 [end TDA_015]
+
+INFO (TSV-900): verify_test_structures processing has started Thu Nov 19 00:18:24 2026    [end TSV_900] 
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+FlexNet Licensing checkout error: No such feature exists.
+Feature:       Modus_Test
+License path:  5280@14.139.1.126:1717@10.10.2.131:
+FlexNet Licensing error:-5,147.  System Error: 2 "No such file or directory"
+license file(s):  5280@14.139.1.126 1717@10.10.2.131
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+------------------- verify_test_structures Process Preview ---------------------
+  apply constraints ...................................... constraints=yes    
+  Print 1 message per source of clock race ............... limitcisource=yes  
+  Print 1 Message per capture of clock race .............. limitcicapture=yes 
+  Check for mutually exclusive gating logic (MEG) ........ megraces=yes       
+  Use raise message severity attributes if they exist .... raisemsgsev=no    
+  Reporting options ...................................... report[option]=yes/no 
+    Process Preview ......................................   preview=yes     
+    Circuit Statistics ...................................   circuit=yes      
+    Message Summary ......................................   summary=yes      
+    Specific Messages ....................................   specific=yes     
+    Tests Status .........................................   status=no       
+    Output File Names and Size ...........................   filestats=yes    
+    Display messages for cloaked objects .................   cloakedobj=no   
+  Re-run verify_test_structures test(s) ................... reruntests=no     
+  Use message suppression attributes if they exist ....... suppressmsg=no    
+  Test selected .......................................... test[option]=yes/no 
+    Analyze test clock control of memory elements ........   testclockusage=yes 
+    Analyze three-state drivers for contention ...........   tsdcontention=yes 
+    Analyze feedback loops and keeper devices ............   feedback=yes 
+    Analyze clock choppers ...............................   clockchopper=yes 
+    Analyze flip-flop and latch scan characteristics .....   latchusage=yes 
+    Analyze explicit fixed value latches .................   explicitfvlatch=yes 
+    Analyze potential clock signal races .................   clocksignalraces=yes 
+    Analyze internal scan chains .........................   internalscanchains=yes 
+
+--------------------Circuit Statistics--------------------
+
+INFO (TLM-055): Design Summary
+                --------------
+
+Hierarchical Model:                  Flattened Model:
+          4,817  Blocks                       2,745  Blocks
+         14,989  Pins                         2,745  Nodes
+          8,430  Nets
+
+Primary Inputs:                      Primary Outputs:
+         27  Input Only                        16  Output Only
+          0  Input/Output                       0  Input/Output
+         27  Total Inputs                      16  Total Outputs
+
+Tied Nets:                           Dotted Nets:
+        124  Tied to 0                          0  Two-State
+         65  Tied to 1                          0  Three-State
+          0  Tied to X                          0  Total Dotted Nets
+        189  Total Tied Nets
+
+Selected Primitive Functions:
+          0  Clock Chopper (CHOP) primitives 
+          0  RAMs
+          0  ROMs
+          0  TSDs
+          0  Resistors
+          0  Transistors
+        229  MUX2s
+          0  Latches
+
+
+        129  Rising  Edge Flop w/Set-Dominant and Reset Port
+        129  Total Flops
+
+        522  Technology Library Cell Instances
+
+[end TLM_055] 
+
+Test Function Pin Information for Test Mode:  TDF_LOC
+-------------------------------------------
+
+          2  SC    (System  Clock)             Pins
+          0  PC    (P Shift Clock)             Pins
+          1  EC    (E Shift Clock)             Pins
+
+          0  OSC   (Oscillator)                Pins
+
+          0  TI    (Test Inhibit)              Pins
+          1  SE    (Scan Enable)               Pins
+          0  CI    (Clock Isolation)           Pins
+          0  OI    (Output Inhibit)            Pins
+
+          1  SI    (Scan Input)                Pins
+          1  SO    (Scan Output)               Pins
+
+  Pin Index    Type Test Function                         Pin Name / Net Name
+  ---------    ---- ----------------------------------    -------------------
+         16      PI  +SC                                  rst_n / rst_n
+         13      PI  -EC  -SC                             clk / clk
+          0      PI  +SE                                  SE / SE
+         14      PI   SI                                  dft_sdi_1 / dft_sdi_1
+         27      PO   SO                                  dft_sdo_1 / dft_sdo_1
+
+  
+   Analyze test clocks' control of memory elements    
+
+Analyze test clocks' control of memory elements process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze three-state drivers for contention 
+
+Analyze three-state drivers for contention process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze feedback loops and keeper devices          
+
+Analyze feedback loops and keeper devices process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze clock choppers                             
+
+Analyze clock choppers process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze flip-flop and latch scan characteristics   
+INFO (TSV-068): The length of the longest scan chain is 129 bit positions, which is 100% of the average scan chain length 129 (based on 129 total scan chain bits and 1 valid scan chains).   [end TSV_068] 
+INFO (TSV-378): Scan chain beginning at 'pin dft_sdi_1' and ending at 'pin dft_sdo_1' is controllable and observable. The length of the scan chain is 129 bit positions.   [end TSV_378] 
+INFO (TSV-567): There are 1 controllable scan chains fed by Scan In (SI) primary inputs.   [end TSV_567] 
+INFO (TSV-568): There are 1 observable scan chains feeding to Scan Out (SO) primary outputs.   [end TSV_568] 
+INFO (TSV-569): There are 0 controllable scan chains fed by on-product Pattern Generator(s).   [end TSV_569] 
+INFO (TSV-570): There are 0 observable scan chains feeding to on-product Multiple-Input Signature Register (MISRs).   [end TSV_570] 
+
+Analyze flip-flop and latch scan characteristics process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze explicit fixed value latches 
+
+Analyze explicit fixed value latches process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze potential clock signal races               
+   Check for mutually exclusive gating logic (MEG)    
+
+Analyze potential clock signal races process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze internal scan chains 
+
+Analyze channel inputs for validity process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+
+--------------------File Information----------------------
+          57344 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/TSVmessageFile.TDF_LOC 
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+INFO (TSV-908): verify_test_structures processing complete.   [end TSV_908] 
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =            6,634,672  bytes
+
+                      CPU Time =    0:00:00.01
+                  Elapsed Time =    0:00:05.54                    [end TDA_001]
+
+     Date Ended:  Thursday Nov 19 00:18:29 2026  IST
+
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      1 INFO (TLM-055): Design Summary
+      1 INFO (TSV-068): The length of the longest scan chain is 129 bit positions, which is 100% of the average scan chain length 129 (based on 129 total scan chain bits and 1 valid scan chains).    
+      1 INFO (TSV-378): Scan chain beginning at 'pin dft_sdi_1' and ending at 'pin dft_sdo_1' is controllable and observable. The length of the scan chain is 129 bit positions.    
+      1 INFO (TSV-567): There are 1 controllable scan chains fed by Scan In (SI) primary inputs.    
+      1 INFO (TSV-568): There are 1 observable scan chains feeding to Scan Out (SO) primary outputs.    
+      1 INFO (TSV-569): There are 0 controllable scan chains fed by on-product Pattern Generator(s).    
+      1 INFO (TSV-570): There are 0 observable scan chains feeding to on-product Multiple-Input Signature Register (MISRs).    
+      1 INFO (TSV-900): verify_test_structures processing has started Thu Nov 19 00:18:24 2026     
+      1 INFO (TSV-908): verify_test_structures processing complete.    
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+@file(scripts/run_modus.tcl) 116: verify_test_structures -testmode TDF_LOS -workdir $workdir
+Starting Command: verify_test_structures 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_verify_test_structures_TDF_LOS_111926001830-685995000 [end TDA_015]
+
+INFO (TSV-900): verify_test_structures processing has started Thu Nov 19 00:18:30 2026    [end TSV_900] 
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+FlexNet Licensing checkout error: No such feature exists.
+Feature:       Modus_Test
+License path:  5280@14.139.1.126:1717@10.10.2.131:
+FlexNet Licensing error:-5,147.  System Error: 2 "No such file or directory"
+license file(s):  5280@14.139.1.126 1717@10.10.2.131
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+------------------- verify_test_structures Process Preview ---------------------
+  apply constraints ...................................... constraints=yes    
+  Print 1 message per source of clock race ............... limitcisource=yes  
+  Print 1 Message per capture of clock race .............. limitcicapture=yes 
+  Check for mutually exclusive gating logic (MEG) ........ megraces=yes       
+  Use raise message severity attributes if they exist .... raisemsgsev=no    
+  Reporting options ...................................... report[option]=yes/no 
+    Process Preview ......................................   preview=yes     
+    Circuit Statistics ...................................   circuit=yes      
+    Message Summary ......................................   summary=yes      
+    Specific Messages ....................................   specific=yes     
+    Tests Status .........................................   status=no       
+    Output File Names and Size ...........................   filestats=yes    
+    Display messages for cloaked objects .................   cloakedobj=no   
+  Re-run verify_test_structures test(s) ................... reruntests=no     
+  Use message suppression attributes if they exist ....... suppressmsg=no    
+  Test selected .......................................... test[option]=yes/no 
+    Analyze test clock control of memory elements ........   testclockusage=yes 
+    Analyze three-state drivers for contention ...........   tsdcontention=yes 
+    Analyze feedback loops and keeper devices ............   feedback=yes 
+    Analyze clock choppers ...............................   clockchopper=yes 
+    Analyze flip-flop and latch scan characteristics .....   latchusage=yes 
+    Analyze explicit fixed value latches .................   explicitfvlatch=yes 
+    Analyze potential clock signal races .................   clocksignalraces=yes 
+    Analyze internal scan chains .........................   internalscanchains=yes 
+
+--------------------Circuit Statistics--------------------
+
+INFO (TLM-055): Design Summary
+                --------------
+
+Hierarchical Model:                  Flattened Model:
+          4,817  Blocks                       2,745  Blocks
+         14,989  Pins                         2,745  Nodes
+          8,430  Nets
+
+Primary Inputs:                      Primary Outputs:
+         27  Input Only                        16  Output Only
+          0  Input/Output                       0  Input/Output
+         27  Total Inputs                      16  Total Outputs
+
+Tied Nets:                           Dotted Nets:
+        124  Tied to 0                          0  Two-State
+         65  Tied to 1                          0  Three-State
+          0  Tied to X                          0  Total Dotted Nets
+        189  Total Tied Nets
+
+Selected Primitive Functions:
+          0  Clock Chopper (CHOP) primitives 
+          0  RAMs
+          0  ROMs
+          0  TSDs
+          0  Resistors
+          0  Transistors
+        229  MUX2s
+          0  Latches
+
+
+        129  Rising  Edge Flop w/Set-Dominant and Reset Port
+        129  Total Flops
+
+        522  Technology Library Cell Instances
+
+[end TLM_055] 
+
+Test Function Pin Information for Test Mode:  TDF_LOS
+-------------------------------------------
+
+          2  SC    (System  Clock)             Pins
+          0  PC    (P Shift Clock)             Pins
+          1  EC    (E Shift Clock)             Pins
+
+          0  OSC   (Oscillator)                Pins
+
+          0  TI    (Test Inhibit)              Pins
+          1  SE    (Scan Enable)               Pins
+          0  CI    (Clock Isolation)           Pins
+          0  OI    (Output Inhibit)            Pins
+
+          1  SI    (Scan Input)                Pins
+          1  SO    (Scan Output)               Pins
+
+  Pin Index    Type Test Function                         Pin Name / Net Name
+  ---------    ---- ----------------------------------    -------------------
+         16      PI  +SC                                  rst_n / rst_n
+         13      PI  -EC  -SC                             clk / clk
+          0      PI  +SE                                  SE / SE
+         14      PI   SI                                  dft_sdi_1 / dft_sdi_1
+         27      PO   SO                                  dft_sdo_1 / dft_sdo_1
+
+  
+   Analyze test clocks' control of memory elements    
+
+Analyze test clocks' control of memory elements process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze three-state drivers for contention 
+
+Analyze three-state drivers for contention process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze feedback loops and keeper devices          
+
+Analyze feedback loops and keeper devices process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze clock choppers                             
+
+Analyze clock choppers process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze flip-flop and latch scan characteristics   
+INFO (TSV-068): The length of the longest scan chain is 129 bit positions, which is 100% of the average scan chain length 129 (based on 129 total scan chain bits and 1 valid scan chains).   [end TSV_068] 
+INFO (TSV-378): Scan chain beginning at 'pin dft_sdi_1' and ending at 'pin dft_sdo_1' is controllable and observable. The length of the scan chain is 129 bit positions.   [end TSV_378] 
+INFO (TSV-567): There are 1 controllable scan chains fed by Scan In (SI) primary inputs.   [end TSV_567] 
+INFO (TSV-568): There are 1 observable scan chains feeding to Scan Out (SO) primary outputs.   [end TSV_568] 
+INFO (TSV-569): There are 0 controllable scan chains fed by on-product Pattern Generator(s).   [end TSV_569] 
+INFO (TSV-570): There are 0 observable scan chains feeding to on-product Multiple-Input Signature Register (MISRs).   [end TSV_570] 
+
+Analyze flip-flop and latch scan characteristics process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze explicit fixed value latches 
+
+Analyze explicit fixed value latches process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze potential clock signal races               
+   Check for mutually exclusive gating logic (MEG)    
+
+Analyze potential clock signal races process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze internal scan chains 
+
+Analyze channel inputs for validity process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+
+--------------------File Information----------------------
+          57344 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/TSVmessageFile.TDF_LOS 
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+INFO (TSV-908): verify_test_structures processing complete.   [end TSV_908] 
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =            6,640,144  bytes
+
+                      CPU Time =    0:00:00.02
+                  Elapsed Time =    0:00:05.25                    [end TDA_001]
+
+     Date Ended:  Thursday Nov 19 00:18:35 2026  IST
+
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      1 INFO (TLM-055): Design Summary
+      1 INFO (TSV-068): The length of the longest scan chain is 129 bit positions, which is 100% of the average scan chain length 129 (based on 129 total scan chain bits and 1 valid scan chains).    
+      1 INFO (TSV-378): Scan chain beginning at 'pin dft_sdi_1' and ending at 'pin dft_sdo_1' is controllable and observable. The length of the scan chain is 129 bit positions.    
+      1 INFO (TSV-567): There are 1 controllable scan chains fed by Scan In (SI) primary inputs.    
+      1 INFO (TSV-568): There are 1 observable scan chains feeding to Scan Out (SO) primary outputs.    
+      1 INFO (TSV-569): There are 0 controllable scan chains fed by on-product Pattern Generator(s).    
+      1 INFO (TSV-570): There are 0 observable scan chains feeding to on-product Multiple-Input Signature Register (MISRs).    
+      1 INFO (TSV-900): verify_test_structures processing has started Thu Nov 19 00:18:30 2026     
+      1 INFO (TSV-908): verify_test_structures processing complete.    
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+@file(scripts/run_modus.tcl) 120: build_faultmodel \
+    -includedynamic yes \
+    -workdir $workdir
+Starting Command: build_faultmodel 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_build_faultmodel_111926001836-983108000 [end TDA_015]
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+FlexNet Licensing checkout error: No such feature exists.
+Feature:       Modus_Test
+License path:  5280@14.139.1.126:1717@10.10.2.131:
+FlexNet Licensing error:-5,147.  System Error: 2 "No such file or directory"
+license file(s):  5280@14.139.1.126 1717@10.10.2.131
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+INFO (TFM-099): Build Fault Model started.  [end TFM_099] 
+INFO (TFM-102): Creating faultModel file /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/faultModel.  [end TFM_102] 
+
+Global Ignored Static Fault Count                 0
+Global Ignored Dynamic Fault Count                0
+
+
+                            Global Statistics
+
+                    ATCov  ----------------------- Global Faults --------------------------
+                   Global        Total       Tested     Possibly    Redundant     Untested
+
+Total Static         0.00         4556            0            0            0         4556
+Collapsed Static     0.00         3338            0            0            0         3338
+PI Static            0.00           54            0            0            0           54
+PO Static            0.00           32            0            0            0           32
+
+Total Dynamic        0.00         4556            0            0            0         4556
+Collapsed Dynamic    0.00         3988            0            0            0         3988
+PI Dynamic           0.00           54            0            0            0           54
+PO Dynamic           0.00           32            0            0            0           32
+
+Parametric        
+
+IDDq                 0.00         4556            0                                   4556
+
+
+
+INFO (TFM-103): Creating faultStatus file /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/faultStatus.  [end TFM_103] 
+
+                           Testmode Statistics: TDF_LOC
+
+                 ---- ATCov ---- ------------------------ Testmode Faults ----------------------- ------------------------- Global Faults ------------------------
+                 Testmode Global        Total       Tested     Possibly    Redundant     Untested        Total       Tested     Possibly    Redundant     Untested
+
+Total Static         0.00   0.00         4556            0            0            0         4556         4556            0            0            0         4556
+Collapsed Static     0.00   0.00         3338            0            0            0         3338         3338            0            0            0         3338
+PI Static            0.00   0.00           54            0            0            0           54           54            0            0            0           54
+PO Static            0.00   0.00           32            0            0            0           32           32            0            0            0           32
+
+Total Dynamic        0.00   0.00         4164            0            0            0         4164         4556            0            0            0         4556
+Collapsed Dynamic    0.00   0.00         3596            0            0            0         3596         3988            0            0            0         3988
+PI Dynamic           0.00   0.00           50            0            0            0           50           54            0            0            0           54
+PO Dynamic           0.00   0.00           32            0            0            0           32           32            0            0            0           32
+
+Parametric        
+
+IDDq                 0.00   0.00         4556            0                                   4556         4556            0                                   4556
+
+Path                 0.00   0.00            0            0                                      0            0            0                                      0
+
+
+
+                           Testmode Statistics: TDF_LOS
+
+                 ---- ATCov ---- ------------------------ Testmode Faults ----------------------- ------------------------- Global Faults ------------------------
+                 Testmode Global        Total       Tested     Possibly    Redundant     Untested        Total       Tested     Possibly    Redundant     Untested
+
+Total Static         0.00   0.00         4556            0            0            0         4556         4556            0            0            0         4556
+Collapsed Static     0.00   0.00         3338            0            0            0         3338         3338            0            0            0         3338
+PI Static            0.00   0.00           54            0            0            0           54           54            0            0            0           54
+PO Static            0.00   0.00           32            0            0            0           32           32            0            0            0           32
+
+Total Dynamic        0.00   0.00         4164            0            0            0         4164         4556            0            0            0         4556
+Collapsed Dynamic    0.00   0.00         3596            0            0            0         3596         3988            0            0            0         3988
+PI Dynamic           0.00   0.00           50            0            0            0           50           54            0            0            0           54
+PO Dynamic           0.00   0.00           32            0            0            0           32           32            0            0            0           32
+
+Parametric        
+
+IDDq                 0.00   0.00         4556            0                                   4556         4556            0                                   4556
+
+Path                 0.00   0.00            0            0                                      0            0            0                                      0
+
+
+
+INFO (TFM-704): Maximum Global Test Coverage Statistics: 
+
+                  %Active      #Faults      #Active    #Inactive
+Total Static       100.00         4556         4556            0
+Collapsed Static   100.00         3338         3338            0
+PI Static          100.00           54           54            0
+PO Static          100.00           32           32            0
+
+Total Dynamic       91.40         4556         4164          392
+Collapsed Dynamic   90.17         3988         3596          392
+PI Dynamic          92.59           54           50            4
+PO Dynamic         100.00           32           32            0
+
+Parametric        
+
+There are 2 test mode(s) defined:
+      TDF_LOC
+      TDF_LOS
+
+[end TFM_704]
+INFO (TFM-109): Build Fault Model has completed with highest level severity message of INFO.  [end TFM_109] 
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =            7,690,224  bytes
+
+                      CPU Time =    0:00:00.01
+                  Elapsed Time =    0:00:00.02                    [end TDA_001]
+
+     Date Ended:  Thursday Nov 19 00:18:39 2026  IST
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      1 INFO (TFM-099): Build Fault Model started.   
+      1 INFO (TFM-102): Creating faultModel file /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/faultModel.   
+      1 INFO (TFM-103): Creating faultStatus file /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/faultStatus.   
+      1 INFO (TFM-109): Build Fault Model has completed with highest level severity message of INFO.   
+      1 INFO (TFM-704): Maximum Global Test Coverage Statistics: 
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+@file(scripts/run_modus.tcl) 124: set summary [file join $log_dir kpi.txt]
+@file(scripts/run_modus.tcl) 125: set fh [open $summary w]
+@file(scripts/run_modus.tcl) 126: puts $fh "# Project 3 transition ATPG -- generated by scripts/run_modus.tcl"
+@file(scripts/run_modus.tcl) 127: puts $fh "# Modus 22.10-p008_1; design top $top; run $run_dir"
+@file(scripts/run_modus.tcl) 128: close $fh
+@file(scripts/run_modus.tcl) 130: proc p3_kpi {file key value} {
+    if {![string length $value]} { set value NA }
+    set fh [open $file a]
+    puts $fh "$key $value"
+    close $fh
+}
+@file(scripts/run_modus.tcl) 140: proc p3_metrics {path} {
+    set d [dict create]
+    if {![file isfile $path]} { return $d }
+    set fh [open $path r]
+    set txt [read $fh]
+    close $fh
+    foreach line [split $txt \n] {
+        if {[regexp {^\s*([A-Za-z0-9_.:\-]+)\s+(\S+)\s*$} $line -> key value]} {
+            dict set d $key $value
+        }
+    }
+    return $d
+}
+@file(scripts/run_modus.tcl) 154: array set p3_runtime {}
+@file(scripts/run_modus.tcl) 155: array set p3_sequence {}
+@file(scripts/run_modus.tcl) 156: array set p3_release {}
+@file(scripts/run_modus.tcl) 157: array set p3_experiment {}
+@file(scripts/run_modus.tcl) 159: foreach {mode experiment sequence release tag} {
+    TDF_LOC loc_exp intra   yes loc
+    TDF_LOS los_exp losintra no los
+} {
+    puts "Starting $mode transition ATPG: dynseqfilter=$sequence dynfuncrelease=$release"
+    set p3_sequence($mode) $sequence
+    set p3_release($mode) $release
+    set p3_experiment($mode) $experiment
+    set started_ms [clock milliseconds]
+
+    set dyn_opts [list \
+        -testmode $mode \
+        -experiment $experiment \
+        -dynseqfilter $sequence \
+        -dynfuncrelease $release \
+        -workdir $workdir]
+    if {$clock_constraints ne ""} {
+        lappend dyn_opts -clockconstraints $clock_constraints
+    }
+    create_logic_delay_tests {*}$dyn_opts
+
+    set elapsed_seconds [expr {([clock milliseconds] - $started_ms) / 1000.0}]
+    set p3_runtime($mode) $elapsed_seconds
+    puts "P3_ATPG_RUNTIME_SECONDS $mode $elapsed_seconds"
+
+    commit_tests \
+        -testmode $mode \
+        -inexperiment $experiment \
+        -workdir $workdir
+
+    write_vectors \
+        -testmode $mode \
+        -language verilog \
+        -scanformat parallel \
+        -outputfilename ${tag}_transition \
+        -exportdir $vector_dir \
+        -workdir $workdir
+}
+Starting TDF_LOC transition ATPG: dynseqfilter=intra dynfuncrelease=yes
+Starting Command: create_logic_delay_tests 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_create_logic_delay_tests_TDF_LOC_loc_exp_111926001840-670450000 [end TDA_015]
+
+
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+****************************************************************************************************
+Coverage Definitions:
+ #Faults  : Number of Active Faults (observable).
+ #Tested  : Number of Active Faults marked tested.
+ #Possibly: Number of Active Faults marked possibly tested
+            (good value is 0 or 1; fault value is X).
+ #Redund  : Number of Active Faults untestable due to redundancy.
+ #Untested: Number of Active Faults untested.
+ %TCov  (%Test Coverage)                      : #Tested / #Faults
+ %ATCov (%Adjusted TCov)                      : #Tested / (#Faults-#Redund)
+****************************************************************************************************
+****************************************************************************************************
+                           Testmode Statistics: TDF_LOC
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556            0            0            0         4556   0.00   0.00
+Total Dynamic                 4164            0            0            0         4164   0.00   0.00
+
+                            Global Statistics
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556            0            0            0         4556   0.00   0.00
+Total Dynamic                 4556            0            0            0         4556   0.00   0.00
+****************************************************************************************************
+
+*************************************************************************************************************
+INFO (TTC-110): Starting Scan Test generation                                                   [end TTC_110] 
+
+INFO (TDA-220):   --- Tests ---   Faults     ---- ATCov ----   -- Faults --   - Elapsed Time -  [end TDA_220] 
+INFO (TDA-220):    Sim.    Eff.  Detected    Tmode    Global     Untested                       [end TDA_220] 
+INFO (TDA-220):      1       1        780    18.73%   17.12%         3384           00:02.86    [end TDA_220] 
+INFO (TTC-110): Ending Scan Test generation                                                     [end TTC_110] 
+*************************************************************************************************************
+
+*************************************************************************************************************
+INFO (TTC-110): Starting Dynamic Logic Test generation                                          [end TTC_110] 
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+INFO (TDA-220):     16      16       1277    49.40%   45.15%         2107           00:03.30    [end TDA_220] 
+INFO (TDA-220):     32      32        329    57.30%   52.37%         1778           00:03.61    [end TDA_220] 
+INFO (TDA-220):     48      48        179    61.60%   56.30%         1599           00:03.79    [end TDA_220] 
+INFO (TDA-220):     64      64        121    64.51%   58.96%         1478           00:04.23    [end TDA_220] 
+INFO (TDA-220):     80      79         62    65.99%   60.32%         1416           00:05.20    [end TDA_220] 
+INFO (TDA-220):     96      95         43    67.03%   61.26%         1373           00:05.44    [end TDA_220] 
+INFO (TDA-220):    106     105         14    67.36%   61.57%         1359           00:05.65    [end TDA_220] 
+INFO (TTC-110): Ending Dynamic Logic Test generation                                            [end TTC_110] 
+*************************************************************************************************************
+
+****************************************************************************************************
+                           Testmode Statistics: TDF_LOC
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556         3131            0            0         1425  68.72  68.72
+Total Dynamic                 4164         2805            0            0         1359  67.36  67.36
+
+                            Global Statistics
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556         3131            0            0         1425  68.72  68.72
+Total Dynamic                 4556         2805            0            0         1751  61.57  61.57
+****************************************************************************************************
+
+
+              ----Final Pattern Statistics----
+
+ Test Section Type                       # Test Sequences
+----------------------------------------------------------
+ Scan                                           1
+ Logic                                          105
+----------------------------------------------------------
+ Total                                          106
+
+(I) File(s) generated (bytes and name):
+
+          77824 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/faultStatus.TDF_LOC.loc_exp
+         146840 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/TBDbin.TDF_LOC.loc_exp
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =            8,606,576  bytes
+
+                      CPU Time =    0:00:02.83
+                  Elapsed Time =    0:00:05.69                    [end TDA_001]
+
+     Date Ended:  Thursday Nov 19 00:18:46 2026  IST
+
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+     10 INFO (TDA-220):   --- Tests ---   Faults     ---- ATCov ----   -- Faults --   - Elapsed Time -   
+      4 INFO (TTC-110): Starting Scan Test generation                                                    
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+P3_ATPG_RUNTIME_SECONDS TDF_LOC 7.02
+Starting Command: commit_tests 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_commit_tests_TDF_LOC_loc_exp_111926001847-607555000 [end TDA_015]
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+FlexNet Licensing checkout error: No such feature exists.
+Feature:       Modus_Test
+License path:  5280@14.139.1.126:1717@10.10.2.131:
+FlexNet Licensing error:-5,147.  System Error: 2 "No such file or directory"
+license file(s):  5280@14.139.1.126 1717@10.10.2.131
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+
+INFO (TBD-806): Input test vector File(s) (bytes, name):  [end TBD_806] 
+         146840 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/TBDbin.TDF_LOC.loc_exp
+
+INFO (TBD-807): Experiment loc_exp odometers prior to commit_tests: 1.1.1.2.1 thru 1.2.1.8.10 (Relative test numbers 1 thru 106).  [end TBD_807] 
+
+Testmode and Global statistics prior to commit_tests
+
+                 ---- ATCov ---- ------------------------ Testmode Faults ----------------------- ------------------------- Global Faults ------------------------
+                 Testmode Global        Total       Tested     Possibly    Redundant     Untested        Total       Tested     Possibly    Redundant     Untested
+
+Total Static         0.00   0.00         4556            0            0            0         4556         4556            0            0            0         4556
+Collapsed Static     0.00   0.00         3338            0            0            0         3338         3338            0            0            0         3338
+PI Static            0.00   0.00           54            0            0            0           54           54            0            0            0           54
+PO Static            0.00   0.00           32            0            0            0           32           32            0            0            0           32
+
+Total Dynamic        0.00   0.00         4164            0            0            0         4164         4556            0            0            0         4556
+Collapsed Dynamic    0.00   0.00         3596            0            0            0         3596         3988            0            0            0         3988
+PI Dynamic           0.00   0.00           50            0            0            0           50           54            0            0            0           54
+PO Dynamic           0.00   0.00           32            0            0            0           32           32            0            0            0           32
+
+Parametric        
+
+IDDq                 0.00   0.00         4556            0                                   4556         4556            0                                   4556
+
+Path                 0.00   0.00            0            0                                      0            0            0                                      0
+
+
+
+
+Testmode and Global statistics after commit_tests
+
+                 ---- ATCov ---- ------------------------ Testmode Faults ----------------------- ------------------------- Global Faults ------------------------
+                 Testmode Global        Total       Tested     Possibly    Redundant     Untested        Total       Tested     Possibly    Redundant     Untested
+
+Total Static        68.72  68.72         4556         3131            0            0         1425         4556         3131            0            0         1425
+Collapsed Static    67.23  67.23         3338         2244            0            0         1094         3338         2244            0            0         1094
+PI Static           11.11  11.11           54            6            0            0           48           54            6            0            0           48
+PO Static            6.25   6.25           32            2            0            0           30           32            2            0            0           30
+
+Total Dynamic       67.36  61.57         4164         2805            0            0         1359         4556         2805            0            0         1751
+Collapsed Dynamic   66.57  60.03         3596         2394            0            0         1202         3988         2394            0            0         1594
+PI Dynamic           8.00   7.41           50            4            0            0           46           54            4            0            0           50
+PO Dynamic           6.25   6.25           32            2            0            0           30           32            2            0            0           30
+
+Parametric        
+
+IDDq                 0.00   0.00         4556            0                                   4556         4556            0                                   4556
+
+Path                 0.00   0.00            0            0                                      0            0            0                                      0
+
+
+
+INFO (TBD-810): Experiment loc_exp is saved to the master test vectors odometers: 1.1.1.2.1 to 1.2.1.8.10 (Relative test numbers 1 to 106).  [end TBD_810] 
+
+INFO (TBD-809): Master test vector file statistics:  [end TBD_809]   
+  experiments     = 1
+  test sections   = 2
+  tester loops    = 2
+  test procedures = 10
+  test sequence   = 106
+  init sequencess = 2
+
+INFO (TBD-805): File(s) generated (bytes and name):  [end TBD_805] 
+         146840 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/TBDbin.TDF_LOC 
+         200704 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/faultStatus 
+
+INFO (TBD-831): commit_tests completed successfully.  [end TBD_831] 
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =            6,396,400  bytes
+
+                      CPU Time =    0:00:00.01
+                  Elapsed Time =    0:00:00.01                    [end TDA_001]
+
+     Date Ended:  Thursday Nov 19 00:18:51 2026  IST
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      1 INFO (TBD-805): File(s) generated (bytes and name):   
+      1 INFO (TBD-806): Input test vector File(s) (bytes, name):   
+      1 INFO (TBD-807): Experiment loc_exp odometers prior to commit_tests: 1.1.1.2.1 thru 1.2.1.8.10 (Relative test numbers 1 thru 106).   
+      1 INFO (TBD-809): Master test vector file statistics:     
+      1 INFO (TBD-810): Experiment loc_exp is saved to the master test vectors odometers: 1.1.1.2.1 to 1.2.1.8.10 (Relative test numbers 1 to 106).   
+      1 INFO (TBD-831): commit_tests completed successfully.   
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+Starting Command: write_vectors 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_write_vectors_TDF_LOC_111926001852-892901000 [end TDA_015]
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+FlexNet Licensing checkout error: No such feature exists.
+Feature:       Modus_Test
+License path:  5280@14.139.1.126:1717@10.10.2.131:
+FlexNet Licensing error:-5,147.  System Error: 2 "No such file or directory"
+license file(s):  5280@14.139.1.126 1717@10.10.2.131
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+INFO (TVE-001): Verilog write vectors started.   [end TVE_001] 
+INFO (TVE-103): There was no specified TEST offset for this clock 'pin clk'.  A default clock offset of 8.000000 ns will be used.   [end TVE_103] 
+INFO (TVE-103): There was no specified SCAN offset for this clock 'pin clk'.  A default clock offset of 16.000000 ns will be used.   [end TVE_103] 
+INFO (TVE-967): Temporary output files are created in /tmp directory. [end TVE_967] 
+INFO (TVE-004): Reading test section 1.1. Test section type equals scan.   [end TVE_004] 
+INFO (TVE-003): Verilog write vectors output file will be: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/vectors/loc_transition.cyclemap.   [end TVE_003] 
+INFO (TVE-003): Verilog write vectors output file will be: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/vectors/loc_transition.1.verilog.   [end TVE_003] 
+INFO (TVE-005): Created 262 total cycles, of which 4 are test cycles, 258 are scan cycles, 0 are dynamic timed cycles and 0 are dynamic cycles that are not timed.   [end TVE_005] 
+INFO (TVE-008): Created 129 total measures, of which 0 are PO measures and 129 are SO (Scan Out) measures.  [end TVE_008] 
+INFO (TVE-004): Reading test section 1.2. Test section type equals logic.   [end TVE_004] 
+INFO (TVE-003): Verilog write vectors output file will be: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/vectors/loc_transition.2.verilog.   [end TVE_003] 
+INFO (TVE-005): Created 14097 total cycles, of which 213 are test cycles, 13674 are scan cycles, 210 are dynamic timed cycles and 0 are dynamic cycles that are not timed.   [end TVE_005] 
+INFO (TVE-008): Created 13545 total measures, of which 0 are PO measures and 13545 are SO (Scan Out) measures.  [end TVE_008] 
+INFO (TVE-003): Verilog write vectors output file will be: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/vectors/loc_transition.mainsim.v.   [end TVE_003] 
+
+INFO (TVE-050):         TEST SEQUENCE COVERAGE ESTIMATE REPORT  
+    Test       | Global    | Global    | Global    | Global    | Global    | Global    | Sequence   | Overlapped | Total      | 
+    Sequence   | Static    | Static    | Static    | Dynamic   | Dynamic   | Dynamic   | Cycle      | Cycle      | Cycle      | 
+               | Total     | Delta     | Adjusted  | Total     | Delta     | Adjusted  | Count      | Count      | Count      | 
+               | Coverage  | Coverage  | Total     | Coverage  | Coverage  | Total     |            |            |            | 
+               |           |           | Coverage  |           |           | Coverage  |            |            |            | 
+     1.1.1.1.1 |  0.00     |  0.00     |  0.00     |  0.00     |  0.00     |  0.00     |          1 |          0 |          1 |
+     1.1.1.2.1 |  21.42    |  0.00     |  21.42    |  17.12    |  0.00     |  17.12    |        261 |          0 |        262 |
+     1.2.1.1.1 |  21.42    |  0.00     |  21.42    |  17.12    |  0.00     |  17.12    |          1 |          0 |        263 |
+     1.2.1.2.1 |  21.42    |  0.00     |  21.42    |  17.89    |  0.77     |  17.89    |        263 |        130 |        526 |
+     1.2.1.2.2 |  21.42    |  0.00     |  21.42    |  18.68    |  0.79     |  18.68    |        133 |        130 |        659 |
+     1.2.1.2.3 |  21.42    |  0.00     |  21.42    |  20.19    |  1.51     |  20.19    |        133 |        130 |        792 |
+     1.2.1.2.4 |  21.42    |  0.00     |  21.42    |  22.41    |  2.22     |  22.41    |        133 |        130 |        925 |
+     1.2.1.2.5 |  21.42    |  0.00     |  21.42    |  26.51    |  4.10     |  26.51    |        133 |        130 |       1058 |
+     1.2.1.2.6 |  21.42    |  0.00     |  21.42    |  29.59    |  3.07     |  29.59    |        133 |        130 |       1191 |
+     1.2.1.2.7 |  21.42    |  0.00     |  21.42    |  31.43    |  1.84     |  31.43    |        133 |        130 |       1324 |
+     1.2.1.2.8 |  21.42    |  0.00     |  21.42    |  32.90    |  1.47     |  32.90    |        133 |        130 |       1457 |
+     1.2.1.2.9 |  21.42    |  0.00     |  21.42    |  37.62    |  4.72     |  37.62    |        133 |        130 |       1590 |
+    1.2.1.2.10 |  21.42    |  0.00     |  21.42    |  37.82    |  0.20     |  37.82    |        133 |        130 |       1723 |
+    1.2.1.2.11 |  21.42    |  0.00     |  21.42    |  40.54    |  2.72     |  40.54    |        133 |        130 |       1856 |
+    1.2.1.2.12 |  21.42    |  0.00     |  21.42    |  40.98    |  0.44     |  40.98    |        133 |        130 |       1989 |
+    1.2.1.2.13 |  21.42    |  0.00     |  21.42    |  41.99    |  1.01     |  41.99    |        133 |        130 |       2122 |
+    1.2.1.2.14 |  21.42    |  0.00     |  21.42    |  42.67    |  0.68     |  42.67    |        133 |        130 |       2255 |
+    1.2.1.2.15 |  21.42    |  0.00     |  21.42    |  43.92    |  1.25     |  43.92    |        133 |        130 |       2388 |
+    1.2.1.2.16 |  52.44    |  0.00     |  52.44    |  45.15    |  1.23     |  45.15    |        133 |        130 |       2521 |
+     1.2.1.3.1 |  52.44    |  0.00     |  52.44    |  46.71    |  1.56     |  46.71    |        133 |        130 |       2654 |
+     1.2.1.3.2 |  52.44    |  0.00     |  52.44    |  47.48    |  0.77     |  47.48    |        133 |        130 |       2787 |
+     1.2.1.3.3 |  52.44    |  0.00     |  52.44    |  47.94    |  0.46     |  47.94    |        133 |        130 |       2920 |
+     1.2.1.3.4 |  52.44    |  0.00     |  52.44    |  48.22    |  0.29     |  48.22    |        133 |        130 |       3053 |
+     1.2.1.3.5 |  52.44    |  0.00     |  52.44    |  48.95    |  0.72     |  48.95    |        133 |        130 |       3186 |
+     1.2.1.3.6 |  52.44    |  0.00     |  52.44    |  49.06    |  0.11     |  49.06    |        133 |        130 |       3319 |
+     1.2.1.3.7 |  52.44    |  0.00     |  52.44    |  49.34    |  0.29     |  49.34    |        133 |        130 |       3452 |
+     1.2.1.3.8 |  52.44    |  0.00     |  52.44    |  49.47    |  0.13     |  49.47    |        133 |        130 |       3585 |
+     1.2.1.3.9 |  52.44    |  0.00     |  52.44    |  50.22    |  0.75     |  50.22    |        133 |        130 |       3718 |
+    1.2.1.3.10 |  52.44    |  0.00     |  52.44    |  50.44    |  0.22     |  50.44    |        133 |        130 |       3851 |
+    1.2.1.3.11 |  52.44    |  0.00     |  52.44    |  50.66    |  0.22     |  50.66    |        133 |        130 |       3984 |
+    1.2.1.3.12 |  52.44    |  0.00     |  52.44    |  51.08    |  0.42     |  51.08    |        133 |        130 |       4117 |
+    1.2.1.3.13 |  52.44    |  0.00     |  52.44    |  51.32    |  0.24     |  51.32    |        133 |        130 |       4250 |
+    1.2.1.3.14 |  52.44    |  0.00     |  52.44    |  51.54    |  0.22     |  51.54    |        133 |        130 |       4383 |
+    1.2.1.3.15 |  52.44    |  0.00     |  52.44    |  52.04    |  0.50     |  52.04    |        133 |        130 |       4516 |
+    1.2.1.3.16 |  59.11    |  0.00     |  59.11    |  52.37    |  0.33     |  52.37    |        133 |        130 |       4649 |
+     1.2.1.4.1 |  59.11    |  0.00     |  59.11    |  52.63    |  0.26     |  52.63    |        133 |        130 |       4782 |
+     1.2.1.4.2 |  59.11    |  0.00     |  59.11    |  52.85    |  0.22     |  52.85    |        133 |        130 |       4915 |
+     1.2.1.4.3 |  59.11    |  0.00     |  59.11    |  52.92    |  0.07     |  52.92    |        133 |        130 |       5048 |
+     1.2.1.4.4 |  59.11    |  0.00     |  59.11    |  53.34    |  0.42     |  53.34    |        133 |        130 |       5181 |
+     1.2.1.4.5 |  59.11    |  0.00     |  59.11    |  53.60    |  0.26     |  53.60    |        133 |        130 |       5314 |
+     1.2.1.4.6 |  59.11    |  0.00     |  59.11    |  54.02    |  0.42     |  54.02    |        133 |        130 |       5447 |
+     1.2.1.4.7 |  59.11    |  0.00     |  59.11    |  54.19    |  0.18     |  54.19    |        133 |        130 |       5580 |
+     1.2.1.4.8 |  59.11    |  0.00     |  59.11    |  54.37    |  0.18     |  54.37    |        133 |        130 |       5713 |
+     1.2.1.4.9 |  59.11    |  0.00     |  59.11    |  54.50    |  0.13     |  54.50    |        133 |        130 |       5846 |
+    1.2.1.4.10 |  59.11    |  0.00     |  59.11    |  54.76    |  0.26     |  54.76    |        133 |        130 |       5979 |
+    1.2.1.4.11 |  59.11    |  0.00     |  59.11    |  55.11    |  0.35     |  55.11    |        133 |        130 |       6112 |
+    1.2.1.4.12 |  59.11    |  0.00     |  59.11    |  55.33    |  0.22     |  55.33    |        133 |        130 |       6245 |
+    1.2.1.4.13 |  59.11    |  0.00     |  59.11    |  55.51    |  0.18     |  55.51    |        133 |        130 |       6378 |
+    1.2.1.4.14 |  59.11    |  0.00     |  59.11    |  55.68    |  0.18     |  55.68    |        133 |        130 |       6511 |
+    1.2.1.4.15 |  59.11    |  0.00     |  59.11    |  55.95    |  0.26     |  55.95    |        133 |        130 |       6644 |
+    1.2.1.4.16 |  63.30    |  0.00     |  63.30    |  56.30    |  0.35     |  56.30    |        133 |        130 |       6777 |
+     1.2.1.5.1 |  63.30    |  0.00     |  63.30    |  56.39    |  0.09     |  56.39    |        133 |        130 |       6910 |
+     1.2.1.5.2 |  63.30    |  0.00     |  63.30    |  56.67    |  0.29     |  56.67    |        133 |        130 |       7043 |
+     1.2.1.5.3 |  63.30    |  0.00     |  63.30    |  57.00    |  0.33     |  57.00    |        133 |        130 |       7176 |
+     1.2.1.5.4 |  63.30    |  0.00     |  63.30    |  57.29    |  0.29     |  57.29    |        133 |        130 |       7309 |
+     1.2.1.5.5 |  63.30    |  0.00     |  63.30    |  57.46    |  0.18     |  57.46    |        133 |        130 |       7442 |
+     1.2.1.5.6 |  63.30    |  0.00     |  63.30    |  57.68    |  0.22     |  57.68    |        133 |        130 |       7575 |
+     1.2.1.5.7 |  63.30    |  0.00     |  63.30    |  57.92    |  0.24     |  57.92    |        133 |        130 |       7708 |
+     1.2.1.5.8 |  63.30    |  0.00     |  63.30    |  57.97    |  0.04     |  57.97    |        133 |        130 |       7841 |
+     1.2.1.5.9 |  63.30    |  0.00     |  63.30    |  58.17    |  0.20     |  58.17    |        133 |        130 |       7974 |
+    1.2.1.5.10 |  63.30    |  0.00     |  63.30    |  58.34    |  0.18     |  58.34    |        133 |        130 |       8107 |
+    1.2.1.5.11 |  63.30    |  0.00     |  63.30    |  58.43    |  0.09     |  58.43    |        133 |        130 |       8240 |
+    1.2.1.5.12 |  63.30    |  0.00     |  63.30    |  58.52    |  0.09     |  58.52    |        133 |        130 |       8373 |
+    1.2.1.5.13 |  63.30    |  0.00     |  63.30    |  58.58    |  0.07     |  58.58    |        133 |        130 |       8506 |
+    1.2.1.5.14 |  63.30    |  0.00     |  63.30    |  58.78    |  0.20     |  58.78    |        133 |        130 |       8639 |
+    1.2.1.5.15 |  63.30    |  0.00     |  63.30    |  58.82    |  0.04     |  58.82    |        133 |        130 |       8772 |
+    1.2.1.5.16 |  66.09    |  0.00     |  66.09    |  58.96    |  0.13     |  58.96    |        133 |        130 |       8905 |
+     1.2.1.6.1 |  66.09    |  0.00     |  66.09    |  59.00    |  0.04     |  59.00    |        133 |        130 |       9038 |
+     1.2.1.6.2 |  66.09    |  0.00     |  66.09    |  59.04    |  0.04     |  59.04    |        133 |        130 |       9171 |
+     1.2.1.6.3 |  66.09    |  0.00     |  66.09    |  59.26    |  0.22     |  59.26    |        133 |        130 |       9304 |
+     1.2.1.6.4 |  66.09    |  0.00     |  66.09    |  59.35    |  0.09     |  59.35    |        133 |        130 |       9437 |
+     1.2.1.6.5 |  66.09    |  0.00     |  66.09    |  59.42    |  0.07     |  59.42    |        133 |        130 |       9570 |
+     1.2.1.6.6 |  66.09    |  0.00     |  66.09    |  59.48    |  0.07     |  59.48    |        133 |        130 |       9703 |
+     1.2.1.6.7 |  66.09    |  0.00     |  66.09    |  59.50    |  0.02     |  59.50    |        133 |        130 |       9836 |
+     1.2.1.6.8 |  66.09    |  0.00     |  66.09    |  59.66    |  0.15     |  59.66    |        133 |        130 |       9969 |
+     1.2.1.6.9 |  66.09    |  0.00     |  66.09    |  59.72    |  0.07     |  59.72    |        133 |        130 |      10102 |
+    1.2.1.6.10 |  66.09    |  0.00     |  66.09    |  59.83    |  0.11     |  59.83    |        133 |        130 |      10235 |
+    1.2.1.6.11 |  66.09    |  0.00     |  66.09    |  59.86    |  0.02     |  59.86    |        133 |        130 |      10368 |
+    1.2.1.6.12 |  66.09    |  0.00     |  66.09    |  60.12    |  0.26     |  60.12    |        133 |        130 |      10501 |
+    1.2.1.6.13 |  66.09    |  0.00     |  66.09    |  60.23    |  0.11     |  60.23    |        133 |        130 |      10634 |
+    1.2.1.6.14 |  66.09    |  0.00     |  66.09    |  60.29    |  0.07     |  60.29    |        133 |        130 |      10767 |
+    1.2.1.6.15 |  67.34    |  0.00     |  67.34    |  60.32    |  0.02     |  60.32    |        133 |        130 |      10900 |
+     1.2.1.7.1 |  67.34    |  0.00     |  67.34    |  60.34    |  0.02     |  60.34    |        133 |        130 |      11033 |
+     1.2.1.7.2 |  67.34    |  0.00     |  67.34    |  60.36    |  0.02     |  60.36    |        133 |        130 |      11166 |
+     1.2.1.7.3 |  67.34    |  0.00     |  67.34    |  60.40    |  0.04     |  60.40    |        133 |        130 |      11299 |
+     1.2.1.7.4 |  67.34    |  0.00     |  67.34    |  60.45    |  0.04     |  60.45    |        133 |        130 |      11432 |
+     1.2.1.7.5 |  67.34    |  0.00     |  67.34    |  60.51    |  0.07     |  60.51    |        133 |        130 |      11565 |
+     1.2.1.7.6 |  67.34    |  0.00     |  67.34    |  60.58    |  0.07     |  60.58    |        133 |        130 |      11698 |
+     1.2.1.7.7 |  67.34    |  0.00     |  67.34    |  60.82    |  0.24     |  60.82    |        133 |        130 |      11831 |
+     1.2.1.7.8 |  67.34    |  0.00     |  67.34    |  60.84    |  0.02     |  60.84    |        133 |        130 |      11964 |
+     1.2.1.7.9 |  67.34    |  0.00     |  67.34    |  60.86    |  0.02     |  60.86    |        133 |        130 |      12097 |
+    1.2.1.7.10 |  67.34    |  0.00     |  67.34    |  60.93    |  0.07     |  60.93    |        133 |        130 |      12230 |
+    1.2.1.7.11 |  67.34    |  0.00     |  67.34    |  60.95    |  0.02     |  60.95    |        133 |        130 |      12363 |
+    1.2.1.7.12 |  67.34    |  0.00     |  67.34    |  61.04    |  0.09     |  61.04    |        133 |        130 |      12496 |
+    1.2.1.7.13 |  67.34    |  0.00     |  67.34    |  61.13    |  0.09     |  61.13    |        133 |        130 |      12629 |
+    1.2.1.7.14 |  67.34    |  0.00     |  67.34    |  61.15    |  0.02     |  61.15    |        133 |        130 |      12762 |
+    1.2.1.7.15 |  67.34    |  0.00     |  67.34    |  61.17    |  0.02     |  61.17    |        133 |        130 |      12895 |
+    1.2.1.7.16 |  68.31    |  0.00     |  68.31    |  61.26    |  0.09     |  61.26    |        133 |        130 |      13028 |
+     1.2.1.8.1 |  68.31    |  0.00     |  68.31    |  61.28    |  0.02     |  61.28    |        133 |        130 |      13161 |
+     1.2.1.8.2 |  68.31    |  0.00     |  68.31    |  61.30    |  0.02     |  61.30    |        133 |        130 |      13294 |
+     1.2.1.8.3 |  68.31    |  0.00     |  68.31    |  61.41    |  0.11     |  61.41    |        133 |        130 |      13427 |
+     1.2.1.8.4 |  68.31    |  0.00     |  68.31    |  61.44    |  0.02     |  61.44    |        133 |        130 |      13560 |
+     1.2.1.8.5 |  68.31    |  0.00     |  68.31    |  61.46    |  0.02     |  61.46    |        133 |        130 |      13693 |
+     1.2.1.8.6 |  68.31    |  0.00     |  68.31    |  61.48    |  0.02     |  61.48    |        133 |        130 |      13826 |
+     1.2.1.8.7 |  68.31    |  0.00     |  68.31    |  61.50    |  0.02     |  61.50    |        133 |        130 |      13959 |
+     1.2.1.8.8 |  68.31    |  0.00     |  68.31    |  61.52    |  0.02     |  61.52    |        133 |        130 |      14092 |
+     1.2.1.8.9 |  68.31    |  0.00     |  68.31    |  61.55    |  0.02     |  61.55    |        133 |        130 |      14225 |
+    1.2.1.8.10 |  68.72    |  0.00     |  68.72    |  61.57    |  0.02     |  61.57    |        134 |          0 |      14359 |
+  [end TVE_050] 
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =            8,072,128  bytes
+
+                      CPU Time =    0:00:00.04
+                  Elapsed Time =    0:00:00.07                    [end TDA_001]
+
+     Date Ended:  Thursday Nov 19 00:18:55 2026  IST
+
+INFO (TVE-002): Verilog write vectors has completed.   [end TVE_002] 
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      1 INFO (TVE-001): Verilog write vectors started.    
+      1 INFO (TVE-002): Verilog write vectors has completed.    
+      4 INFO (TVE-003): Verilog write vectors output file will be: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/vectors/loc_transition.cyclemap.    
+      2 INFO (TVE-004): Reading test section 1.1. Test section type equals scan.    
+      2 INFO (TVE-005): Created 262 total cycles, of which 4 are test cycles, 258 are scan cycles, 0 are dynamic timed cycles and 0 are dynamic cycles that are not timed.    
+      2 INFO (TVE-008): Created 129 total measures, of which 0 are PO measures and 129 are SO (Scan Out) measures.   
+      1 INFO (TVE-050):         TEST SEQUENCE COVERAGE ESTIMATE REPORT  
+      2 INFO (TVE-103): There was no specified TEST offset for this clock 'pin clk'.  A default clock offset of 8.000000 ns will be used.    
+      1 INFO (TVE-967): Temporary output files are created in /tmp directory.  
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+Starting TDF_LOS transition ATPG: dynseqfilter=losintra dynfuncrelease=no
+Starting Command: create_logic_delay_tests 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_create_logic_delay_tests_TDF_LOS_los_exp_111926001857-102932000 [end TDA_015]
+
+
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+****************************************************************************************************
+Coverage Definitions:
+ #Faults  : Number of Active Faults (observable).
+ #Tested  : Number of Active Faults marked tested.
+ #Possibly: Number of Active Faults marked possibly tested
+            (good value is 0 or 1; fault value is X).
+ #Redund  : Number of Active Faults untestable due to redundancy.
+ #Untested: Number of Active Faults untested.
+ %TCov  (%Test Coverage)                      : #Tested / #Faults
+ %ATCov (%Adjusted TCov)                      : #Tested / (#Faults-#Redund)
+****************************************************************************************************
+****************************************************************************************************
+                           Testmode Statistics: TDF_LOS
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556         3131            0            0         1425  68.72  68.72
+Total Dynamic                 4164         2805            0            0         1359  67.36  67.36
+
+                            Global Statistics
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556         3131            0            0         1425  68.72  68.72
+Total Dynamic                 4556         2805            0            0         1751  61.57  61.57
+****************************************************************************************************
+
+*************************************************************************************************************
+INFO (TTC-110): Starting Scan Test generation                                                   [end TTC_110] 
+
+INFO (TDA-220):   --- Tests ---   Faults     ---- ATCov ----   -- Faults --   - Elapsed Time -  [end TDA_220] 
+INFO (TDA-220):    Sim.    Eff.  Detected    Tmode    Global     Untested                       [end TDA_220] 
+INFO (TDA-220):      1       1          0    67.36%   61.57%         1359           00:02.75    [end TDA_220] 
+INFO (TTC-110): Ending Scan Test generation                                                     [end TTC_110] 
+*************************************************************************************************************
+
+*************************************************************************************************************
+INFO (TTC-110): Starting Dynamic Logic Test generation                                          [end TTC_110] 
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+INFO (TDA-220):     16      16        375    76.37%   69.80%          984           00:02.95    [end TDA_220] 
+INFO (TDA-220):     32      32        117    79.18%   72.37%          867           00:02.99    [end TDA_220] 
+INFO (TDA-220):     48      48         57    80.55%   73.62%          810           00:03.02    [end TDA_220] 
+INFO (TDA-220):     64      63         23    81.10%   74.12%          787           00:03.04    [end TDA_220] 
+INFO (TTC-110): Ending Dynamic Logic Test generation                                            [end TTC_110] 
+*************************************************************************************************************
+
+****************************************************************************************************
+                           Testmode Statistics: TDF_LOS
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556         3631            0            0          925  79.70  79.70
+Total Dynamic                 4164         3377            0            0          787  81.10  81.10
+
+                            Global Statistics
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556         3631            0            0          925  79.70  79.70
+Total Dynamic                 4556         3377            0            0         1179  74.12  74.12
+****************************************************************************************************
+
+
+              ----Final Pattern Statistics----
+
+ Test Section Type                       # Test Sequences
+----------------------------------------------------------
+ Scan                                           1
+ Logic                                          63
+----------------------------------------------------------
+ Total                                          64
+
+(I) File(s) generated (bytes and name):
+
+          77824 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/faultStatus.TDF_LOS.los_exp
+          90149 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/TBDbin.TDF_LOS.los_exp
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =            8,385,072  bytes
+
+                      CPU Time =    0:00:00.31
+                  Elapsed Time =    0:00:03.05                    [end TDA_001]
+
+     Date Ended:  Thursday Nov 19 00:19:00 2026  IST
+
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      7 INFO (TDA-220):   --- Tests ---   Faults     ---- ATCov ----   -- Faults --   - Elapsed Time -   
+      4 INFO (TTC-110): Starting Scan Test generation                                                    
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+P3_ATPG_RUNTIME_SECONDS TDF_LOS 4.791
+Starting Command: commit_tests 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_commit_tests_TDF_LOS_los_exp_111926001901-807704000 [end TDA_015]
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+FlexNet Licensing checkout error: No such feature exists.
+Feature:       Modus_Test
+License path:  5280@14.139.1.126:1717@10.10.2.131:
+FlexNet Licensing error:-5,147.  System Error: 2 "No such file or directory"
+license file(s):  5280@14.139.1.126 1717@10.10.2.131
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+
+INFO (TBD-806): Input test vector File(s) (bytes, name):  [end TBD_806] 
+          90149 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/TBDbin.TDF_LOS.los_exp
+
+INFO (TBD-807): Experiment los_exp odometers prior to commit_tests: 1.1.1.2.1 thru 1.2.1.5.15 (Relative test numbers 1 thru 64).  [end TBD_807] 
+
+Testmode and Global statistics prior to commit_tests
+
+                 ---- ATCov ---- ------------------------ Testmode Faults ----------------------- ------------------------- Global Faults ------------------------
+                 Testmode Global        Total       Tested     Possibly    Redundant     Untested        Total       Tested     Possibly    Redundant     Untested
+
+Total Static        68.72  68.72         4556         3131            0            0         1425         4556         3131            0            0         1425
+Collapsed Static    67.23  67.23         3338         2244            0            0         1094         3338         2244            0            0         1094
+PI Static           11.11  11.11           54            6            0            0           48           54            6            0            0           48
+PO Static            6.25   6.25           32            2            0            0           30           32            2            0            0           30
+
+Total Dynamic       67.36  61.57         4164         2805            0            0         1359         4556         2805            0            0         1751
+Collapsed Dynamic   66.57  60.03         3596         2394            0            0         1202         3988         2394            0            0         1594
+PI Dynamic           8.00   7.41           50            4            0            0           46           54            4            0            0           50
+PO Dynamic           6.25   6.25           32            2            0            0           30           32            2            0            0           30
+
+Parametric        
+
+IDDq                 0.00   0.00         4556            0                                   4556         4556            0                                   4556
+
+Path                 0.00   0.00            0            0                                      0            0            0                                      0
+
+
+
+
+Testmode and Global statistics after commit_tests
+
+                 ---- ATCov ---- ------------------------ Testmode Faults ----------------------- ------------------------- Global Faults ------------------------
+                 Testmode Global        Total       Tested     Possibly    Redundant     Untested        Total       Tested     Possibly    Redundant     Untested
+
+Total Static        79.70  79.70         4556         3631            0            0          925         4556         3631            0            0          925
+Collapsed Static    78.76  78.76         3338         2629            0            0          709         3338         2629            0            0          709
+PI Static           11.11  11.11           54            6            0            0           48           54            6            0            0           48
+PO Static            6.25   6.25           32            2            0            0           30           32            2            0            0           30
+
+Total Dynamic       81.10  74.12         4164         3377            0            0          787         4556         3377            0            0         1179
+Collapsed Dynamic   80.90  72.94         3596         2909            0            0          687         3988         2909            0            0         1079
+PI Dynamic           8.00   7.41           50            4            0            0           46           54            4            0            0           50
+PO Dynamic           6.25   6.25           32            2            0            0           30           32            2            0            0           30
+
+Parametric        
+
+IDDq                 0.00   0.00         4556            0                                   4556         4556            0                                   4556
+
+Path                 0.00   0.00            0            0                                      0            0            0                                      0
+
+
+
+INFO (TBD-810): Experiment los_exp is saved to the master test vectors odometers: 1.1.1.2.1 to 1.2.1.5.15 (Relative test numbers 1 to 64).  [end TBD_810] 
+
+INFO (TBD-809): Master test vector file statistics:  [end TBD_809]   
+  experiments     = 1
+  test sections   = 2
+  tester loops    = 2
+  test procedures = 7
+  test sequence   = 64
+  init sequencess = 2
+
+INFO (TBD-805): File(s) generated (bytes and name):  [end TBD_805] 
+          90149 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/TBDbin.TDF_LOS 
+         241664 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/faultStatus 
+
+INFO (TBD-831): commit_tests completed successfully.  [end TBD_831] 
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =            6,402,880  bytes
+
+                      CPU Time =    0:00:00.01
+                  Elapsed Time =    0:00:00.01                    [end TDA_001]
+
+     Date Ended:  Thursday Nov 19 00:19:03 2026  IST
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      1 INFO (TBD-805): File(s) generated (bytes and name):   
+      1 INFO (TBD-806): Input test vector File(s) (bytes, name):   
+      1 INFO (TBD-807): Experiment los_exp odometers prior to commit_tests: 1.1.1.2.1 thru 1.2.1.5.15 (Relative test numbers 1 thru 64).   
+      1 INFO (TBD-809): Master test vector file statistics:     
+      1 INFO (TBD-810): Experiment los_exp is saved to the master test vectors odometers: 1.1.1.2.1 to 1.2.1.5.15 (Relative test numbers 1 to 64).   
+      1 INFO (TBD-831): commit_tests completed successfully.   
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+Starting Command: write_vectors 
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_write_vectors_TDF_LOS_111926001906-119748000 [end TDA_015]
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+FlexNet Licensing checkout error: No such feature exists.
+Feature:       Modus_Test
+License path:  5280@14.139.1.126:1717@10.10.2.131:
+FlexNet Licensing error:-5,147.  System Error: 2 "No such file or directory"
+license file(s):  5280@14.139.1.126 1717@10.10.2.131
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+INFO (TVE-001): Verilog write vectors started.   [end TVE_001] 
+INFO (TVE-103): There was no specified TEST offset for this clock 'pin clk'.  A default clock offset of 8.000000 ns will be used.   [end TVE_103] 
+INFO (TVE-103): There was no specified SCAN offset for this clock 'pin clk'.  A default clock offset of 16.000000 ns will be used.   [end TVE_103] 
+INFO (TVE-967): Temporary output files are created in /tmp directory. [end TVE_967] 
+INFO (TVE-004): Reading test section 1.1. Test section type equals scan.   [end TVE_004] 
+INFO (TVE-003): Verilog write vectors output file will be: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/vectors/los_transition.cyclemap.   [end TVE_003] 
+INFO (TVE-003): Verilog write vectors output file will be: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/vectors/los_transition.1.verilog.   [end TVE_003] 
+INFO (TVE-005): Created 262 total cycles, of which 4 are test cycles, 258 are scan cycles, 0 are dynamic timed cycles and 0 are dynamic cycles that are not timed.   [end TVE_005] 
+INFO (TVE-008): Created 129 total measures, of which 0 are PO measures and 129 are SO (Scan Out) measures.  [end TVE_008] 
+INFO (TVE-004): Reading test section 1.2. Test section type equals logic.   [end TVE_004] 
+INFO (TVE-003): Verilog write vectors output file will be: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/vectors/los_transition.2.verilog.   [end TVE_003] 
+INFO (TVE-005): Created 8511 total cycles, of which 129 are test cycles, 8256 are scan cycles, 126 are dynamic timed cycles and 0 are dynamic cycles that are not timed.   [end TVE_005] 
+INFO (TVE-008): Created 8127 total measures, of which 0 are PO measures and 8127 are SO (Scan Out) measures.  [end TVE_008] 
+INFO (TVE-003): Verilog write vectors output file will be: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/vectors/los_transition.mainsim.v.   [end TVE_003] 
+
+INFO (TVE-050):         TEST SEQUENCE COVERAGE ESTIMATE REPORT  
+    Test       | Global    | Global    | Global    | Global    | Global    | Global    | Sequence   | Overlapped | Total      | 
+    Sequence   | Static    | Static    | Static    | Dynamic   | Dynamic   | Dynamic   | Cycle      | Cycle      | Cycle      | 
+               | Total     | Delta     | Adjusted  | Total     | Delta     | Adjusted  | Count      | Count      | Count      | 
+               | Coverage  | Coverage  | Total     | Coverage  | Coverage  | Total     |            |            |            | 
+               |           |           | Coverage  |           |           | Coverage  |            |            |            | 
+     1.1.1.1.1 |  0.00     |  0.00     |  0.00     |  0.00     |  0.00     |  0.00     |          1 |          0 |          1 |
+     1.1.1.2.1 |  0.00     |  0.00     |  0.00     |  0.00     |  0.00     |  0.00     |        261 |          0 |        262 |
+     1.2.1.1.1 |  0.00     |  0.00     |  0.00     |  0.00     |  0.00     |  0.00     |          1 |          0 |        263 |
+     1.2.1.2.1 |  0.00     |  0.00     |  0.00     |  0.22     |  0.22     |  0.22     |        263 |        130 |        526 |
+     1.2.1.2.2 |  0.00     |  0.00     |  0.00     |  1.05     |  0.83     |  1.05     |        133 |        130 |        659 |
+     1.2.1.2.3 |  0.00     |  0.00     |  0.00     |  2.22     |  1.16     |  2.22     |        133 |        130 |        792 |
+     1.2.1.2.4 |  0.00     |  0.00     |  0.00     |  2.66     |  0.44     |  2.66     |        133 |        130 |        925 |
+     1.2.1.2.5 |  0.00     |  0.00     |  0.00     |  3.36     |  0.70     |  3.36     |        133 |        130 |       1058 |
+     1.2.1.2.6 |  0.00     |  0.00     |  0.00     |  4.02     |  0.66     |  4.02     |        133 |        130 |       1191 |
+     1.2.1.2.7 |  0.00     |  0.00     |  0.00     |  4.98     |  0.97     |  4.98     |        133 |        130 |       1324 |
+     1.2.1.2.8 |  0.00     |  0.00     |  0.00     |  5.27     |  0.29     |  5.27     |        133 |        130 |       1457 |
+     1.2.1.2.9 |  0.00     |  0.00     |  0.00     |  5.53     |  0.26     |  5.53     |        133 |        130 |       1590 |
+    1.2.1.2.10 |  0.00     |  0.00     |  0.00     |  6.39     |  0.86     |  6.39     |        133 |        130 |       1723 |
+    1.2.1.2.11 |  0.00     |  0.00     |  0.00     |  6.69     |  0.31     |  6.69     |        133 |        130 |       1856 |
+    1.2.1.2.12 |  0.00     |  0.00     |  0.00     |  7.20     |  0.50     |  7.20     |        133 |        130 |       1989 |
+    1.2.1.2.13 |  0.00     |  0.00     |  0.00     |  7.46     |  0.26     |  7.46     |        133 |        130 |       2122 |
+    1.2.1.2.14 |  0.00     |  0.00     |  0.00     |  7.90     |  0.44     |  7.90     |        133 |        130 |       2255 |
+    1.2.1.2.15 |  0.00     |  0.00     |  0.00     |  8.10     |  0.20     |  8.10     |        133 |        130 |       2388 |
+    1.2.1.2.16 |  7.05     |  0.00     |  7.05     |  8.23     |  0.13     |  8.23     |        133 |        130 |       2521 |
+     1.2.1.3.1 |  7.05     |  0.00     |  7.05     |  8.43     |  0.20     |  8.43     |        133 |        130 |       2654 |
+     1.2.1.3.2 |  7.05     |  0.00     |  7.05     |  8.56     |  0.13     |  8.56     |        133 |        130 |       2787 |
+     1.2.1.3.3 |  7.05     |  0.00     |  7.05     |  8.80     |  0.24     |  8.80     |        133 |        130 |       2920 |
+     1.2.1.3.4 |  7.05     |  0.00     |  7.05     |  8.87     |  0.07     |  8.87     |        133 |        130 |       3053 |
+     1.2.1.3.5 |  7.05     |  0.00     |  7.05     |  9.00     |  0.13     |  9.00     |        133 |        130 |       3186 |
+     1.2.1.3.6 |  7.05     |  0.00     |  7.05     |  9.17     |  0.18     |  9.17     |        133 |        130 |       3319 |
+     1.2.1.3.7 |  7.05     |  0.00     |  7.05     |  9.35     |  0.18     |  9.35     |        133 |        130 |       3452 |
+     1.2.1.3.8 |  7.05     |  0.00     |  7.05     |  9.57     |  0.22     |  9.57     |        133 |        130 |       3585 |
+     1.2.1.3.9 |  7.05     |  0.00     |  7.05     |  9.81     |  0.24     |  9.81     |        133 |        130 |       3718 |
+    1.2.1.3.10 |  7.05     |  0.00     |  7.05     |  10.12    |  0.31     |  10.12    |        133 |        130 |       3851 |
+    1.2.1.3.11 |  7.05     |  0.00     |  7.05     |  10.21    |  0.09     |  10.21    |        133 |        130 |       3984 |
+    1.2.1.3.12 |  7.05     |  0.00     |  7.05     |  10.32    |  0.11     |  10.32    |        133 |        130 |       4117 |
+    1.2.1.3.13 |  7.05     |  0.00     |  7.05     |  10.45    |  0.13     |  10.45    |        133 |        130 |       4250 |
+    1.2.1.3.14 |  7.05     |  0.00     |  7.05     |  10.58    |  0.13     |  10.58    |        133 |        130 |       4383 |
+    1.2.1.3.15 |  7.05     |  0.00     |  7.05     |  10.73    |  0.15     |  10.73    |        133 |        130 |       4516 |
+    1.2.1.3.16 |  9.28     |  0.00     |  9.28     |  10.80    |  0.07     |  10.80    |        133 |        130 |       4649 |
+     1.2.1.4.1 |  9.28     |  0.00     |  9.28     |  11.06    |  0.26     |  11.06    |        133 |        130 |       4782 |
+     1.2.1.4.2 |  9.28     |  0.00     |  9.28     |  11.13    |  0.07     |  11.13    |        133 |        130 |       4915 |
+     1.2.1.4.3 |  9.28     |  0.00     |  9.28     |  11.22    |  0.09     |  11.22    |        133 |        130 |       5048 |
+     1.2.1.4.4 |  9.28     |  0.00     |  9.28     |  11.26    |  0.04     |  11.26    |        133 |        130 |       5181 |
+     1.2.1.4.5 |  9.28     |  0.00     |  9.28     |  11.28    |  0.02     |  11.28    |        133 |        130 |       5314 |
+     1.2.1.4.6 |  9.28     |  0.00     |  9.28     |  11.33    |  0.04     |  11.33    |        133 |        130 |       5447 |
+     1.2.1.4.7 |  9.28     |  0.00     |  9.28     |  11.46    |  0.13     |  11.46    |        133 |        130 |       5580 |
+     1.2.1.4.8 |  9.28     |  0.00     |  9.28     |  11.57    |  0.11     |  11.57    |        133 |        130 |       5713 |
+     1.2.1.4.9 |  9.28     |  0.00     |  9.28     |  11.63    |  0.07     |  11.63    |        133 |        130 |       5846 |
+    1.2.1.4.10 |  9.28     |  0.00     |  9.28     |  11.72    |  0.09     |  11.72    |        133 |        130 |       5979 |
+    1.2.1.4.11 |  9.28     |  0.00     |  9.28     |  11.79    |  0.07     |  11.79    |        133 |        130 |       6112 |
+    1.2.1.4.12 |  9.28     |  0.00     |  9.28     |  11.81    |  0.02     |  11.81    |        133 |        130 |       6245 |
+    1.2.1.4.13 |  9.28     |  0.00     |  9.28     |  11.83    |  0.02     |  11.83    |        133 |        130 |       6378 |
+    1.2.1.4.14 |  9.28     |  0.00     |  9.28     |  11.87    |  0.04     |  11.87    |        133 |        130 |       6511 |
+    1.2.1.4.15 |  9.28     |  0.00     |  9.28     |  12.03    |  0.15     |  12.03    |        133 |        130 |       6644 |
+    1.2.1.4.16 |  10.47    |  0.00     |  10.47    |  12.05    |  0.02     |  12.05    |        133 |        130 |       6777 |
+     1.2.1.5.1 |  10.47    |  0.00     |  10.47    |  12.07    |  0.02     |  12.07    |        133 |        130 |       6910 |
+     1.2.1.5.2 |  10.47    |  0.00     |  10.47    |  12.12    |  0.04     |  12.12    |        133 |        130 |       7043 |
+     1.2.1.5.3 |  10.47    |  0.00     |  10.47    |  12.18    |  0.07     |  12.18    |        133 |        130 |       7176 |
+     1.2.1.5.4 |  10.47    |  0.00     |  10.47    |  12.20    |  0.02     |  12.20    |        133 |        130 |       7309 |
+     1.2.1.5.5 |  10.47    |  0.00     |  10.47    |  12.27    |  0.07     |  12.27    |        133 |        130 |       7442 |
+     1.2.1.5.6 |  10.47    |  0.00     |  10.47    |  12.29    |  0.02     |  12.29    |        133 |        130 |       7575 |
+     1.2.1.5.7 |  10.47    |  0.00     |  10.47    |  12.31    |  0.02     |  12.31    |        133 |        130 |       7708 |
+     1.2.1.5.8 |  10.47    |  0.00     |  10.47    |  12.34    |  0.02     |  12.34    |        133 |        130 |       7841 |
+     1.2.1.5.9 |  10.47    |  0.00     |  10.47    |  12.36    |  0.02     |  12.36    |        133 |        130 |       7974 |
+    1.2.1.5.10 |  10.47    |  0.00     |  10.47    |  12.40    |  0.04     |  12.40    |        133 |        130 |       8107 |
+    1.2.1.5.11 |  10.47    |  0.00     |  10.47    |  12.45    |  0.04     |  12.45    |        133 |        130 |       8240 |
+    1.2.1.5.12 |  10.47    |  0.00     |  10.47    |  12.47    |  0.02     |  12.47    |        133 |        130 |       8373 |
+    1.2.1.5.13 |  10.47    |  0.00     |  10.47    |  12.51    |  0.04     |  12.51    |        133 |        130 |       8506 |
+    1.2.1.5.14 |  10.47    |  0.00     |  10.47    |  12.53    |  0.02     |  12.53    |        133 |        130 |       8639 |
+    1.2.1.5.15 |  10.97    |  0.00     |  10.97    |  12.55    |  0.02     |  12.55    |        134 |          0 |       8773 |
+  [end TVE_050] 
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =            7,528,528  bytes
+
+                      CPU Time =    0:00:00.04
+                  Elapsed Time =    0:00:00.05                    [end TDA_001]
+
+     Date Ended:  Thursday Nov 19 00:19:09 2026  IST
+
+INFO (TVE-002): Verilog write vectors has completed.   [end TVE_002] 
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      1 INFO (TVE-001): Verilog write vectors started.    
+      1 INFO (TVE-002): Verilog write vectors has completed.    
+      4 INFO (TVE-003): Verilog write vectors output file will be: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/vectors/los_transition.cyclemap.    
+      2 INFO (TVE-004): Reading test section 1.1. Test section type equals scan.    
+      2 INFO (TVE-005): Created 262 total cycles, of which 4 are test cycles, 258 are scan cycles, 0 are dynamic timed cycles and 0 are dynamic cycles that are not timed.    
+      2 INFO (TVE-008): Created 129 total measures, of which 0 are PO measures and 129 are SO (Scan Out) measures.   
+      1 INFO (TVE-050):         TEST SEQUENCE COVERAGE ESTIMATE REPORT  
+      2 INFO (TVE-103): There was no specified TEST offset for this clock 'pin clk'.  A default clock offset of 8.000000 ns will be used.    
+      1 INFO (TVE-967): Temporary output files are created in /tmp directory.  
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
+@file(scripts/run_modus.tcl) 201: set metrics [file join $workdir tbdata modus_metrics]
+@file(scripts/run_modus.tcl) 202: if {[file isfile $metrics]} {
+    file copy -force $metrics [file join $run_dir modus_metrics.txt]
+} else {
+    puts "WARNING: $metrics not found -- fault KPIs will be NA"
+}
+@file(scripts/run_modus.tcl) 207: set met [p3_metrics $metrics]
+@file(scripts/run_modus.tcl) 209: foreach {mode tag} {TDF_LOC loc TDF_LOS los} {
+    set kpi [file join $log_dir kpi_${tag}.txt]
+    set fh [open $kpi w]
+    puts $fh "# $mode, dynseqfilter=$p3_sequence($mode) dynfuncrelease=$p3_release($mode)"
+    close $fh
+    # Keys must be built here: a ${mode} reference inside a braced foreach
+    # list is not substituted, which silently turned every lookup into NA.
+    set dyn    "atpg.testmode:$mode.stats:dynamic"
+    set expdyn "atpg.testmode:$mode.experiment:$p3_experiment($mode).stats:dynamic"
+    set counts "atpg.testmode:$mode"
+    # TCov (as opposed to ATCov) is only reported per experiment on this release.
+    foreach {label suffix} {
+        testmode_tcov tcov
+        global_tcov    global_tcov
+    } {
+        set v ""
+        set key "$expdyn.$suffix"
+        if {[dict exists $met $key]} { set v [dict get $met $key] }
+        p3_kpi $kpi $label [regsub {%$} $v ""]
+        p3_kpi $summary $mode.$label [regsub {%$} $v ""]
+    }
+    foreach {label suffix} {
+        testmode_total_faults      total_faults
+        testmode_tested_faults     tested_faults
+        testmode_untested_faults   untested_faults
+        testmode_possible_faults   possible_faults
+        testmode_redundant_faults  redundant_faults
+        testmode_atcov             atcov
+        global_total_faults        global_total_faults
+        global_tested_faults       global_tested_faults
+        global_untested_faults     global_untested_faults
+        global_atcov               global_atcov
+    } {
+        set v ""
+        set key "$dyn.$suffix"
+        if {[dict exists $met $key]} { set v [dict get $met $key] }
+        p3_kpi $kpi $label [regsub {%$} $v ""]
+        p3_kpi $summary $mode.$label [regsub {%$} $v ""]
+    }
+    foreach {label suffix} {
+        num_tests       num_tests
+        num_logic_tests num_logic_delay_tests
+        num_scan_tests  num_scan_tests
+    } {
+        set v ""
+        set key "$counts.$suffix"
+        if {[dict exists $met $key]} { set v [dict get $met $key] }
+        p3_kpi $kpi $label $v
+        p3_kpi $summary $mode.$label $v
+    }
+    p3_kpi $kpi atpg_runtime_seconds $p3_runtime($mode)
+    p3_kpi $summary $mode.atpg_runtime_seconds $p3_runtime($mode)
+}
+@file(scripts/run_modus.tcl) 263: puts "Finished LOC and LOS transition ATPG. Vectors and Modus database are in: $run_dir"
+Finished LOC and LOS transition ATPG. Vectors and Modus database are in: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804
+@file(scripts/run_modus.tcl) 264: exit
+
+Script done on 2026-11-19 00:19:11+05:30

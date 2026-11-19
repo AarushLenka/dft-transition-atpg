@@ -1,0 +1,8 @@
+# Modus databases and generated run products can be large and release-specific.
+/runs/
+tbdata/
+
+# Modus writes its transcript, command file and license-scratch logs into the CWD.
+modus.log*
+modus.cmd*
+flex*.log

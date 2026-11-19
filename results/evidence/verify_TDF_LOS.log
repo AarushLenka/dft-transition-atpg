@@ -1,0 +1,212 @@
+Starting Command: verify_test_structures 
+
+INFO (TDA-005): Command Line Invocation: 
+            verify_test_structures -testmode TDF_LOS -workdir /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804  [end TDA_005]
+
+INFO (TDA-014): Cadence(R) Modus(TM) DFT Software Solution, Version 22.10-p008_1, built Oct 18 2022 (linux26_64) [end TDA_014]
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_verify_test_structures_TDF_LOS_111926001830-685995000 [end TDA_015]
+
+INFO (TDA-007): Job Information:
+            Date Started: Thursday Nov 19 00:18:30 2026  IST
+            Host machine is cadence-server.vit.ac.in, x86_64 running Linux 4.18.0-477.21.1.el8_8.x86_64.
+            This job is process number 3665939.
+[end TDA_007]
+
+INFO (TDA-009): Options/Values information.
+            (options marked with '*' have program generated values,
+             options marked with '+' were specified to default.)
+
+            -WORKDIR /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804
+            -TESTMODE TDF_LOS
+
+            -LOGFILE /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_verify_test_structures_TDF_LOS_111926001830-685995000
+[end TDA_009]
+INFO (TSV-900): verify_test_structures processing has started Thu Nov 19 00:18:30 2026    [end TSV_900] 
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+FlexNet Licensing checkout error: No such feature exists.
+Feature:       Modus_Test
+License path:  5280@14.139.1.126:1717@10.10.2.131:
+FlexNet Licensing error:-5,147.  System Error: 2 "No such file or directory"
+license file(s):  5280@14.139.1.126 1717@10.10.2.131
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+------------------- verify_test_structures Process Preview ---------------------
+  apply constraints ...................................... constraints=yes    
+  Print 1 message per source of clock race ............... limitcisource=yes  
+  Print 1 Message per capture of clock race .............. limitcicapture=yes 
+  Check for mutually exclusive gating logic (MEG) ........ megraces=yes       
+  Use raise message severity attributes if they exist .... raisemsgsev=no    
+  Reporting options ...................................... report[option]=yes/no 
+    Process Preview ......................................   preview=yes     
+    Circuit Statistics ...................................   circuit=yes      
+    Message Summary ......................................   summary=yes      
+    Specific Messages ....................................   specific=yes     
+    Tests Status .........................................   status=no       
+    Output File Names and Size ...........................   filestats=yes    
+    Display messages for cloaked objects .................   cloakedobj=no   
+  Re-run verify_test_structures test(s) ................... reruntests=no     
+  Use message suppression attributes if they exist ....... suppressmsg=no    
+  Test selected .......................................... test[option]=yes/no 
+    Analyze test clock control of memory elements ........   testclockusage=yes 
+    Analyze three-state drivers for contention ...........   tsdcontention=yes 
+    Analyze feedback loops and keeper devices ............   feedback=yes 
+    Analyze clock choppers ...............................   clockchopper=yes 
+    Analyze flip-flop and latch scan characteristics .....   latchusage=yes 
+    Analyze explicit fixed value latches .................   explicitfvlatch=yes 
+    Analyze potential clock signal races .................   clocksignalraces=yes 
+    Analyze internal scan chains .........................   internalscanchains=yes 
+
+--------------------Circuit Statistics--------------------
+
+INFO (TLM-055): Design Summary
+                --------------
+
+Hierarchical Model:                  Flattened Model:
+          4,817  Blocks                       2,745  Blocks
+         14,989  Pins                         2,745  Nodes
+          8,430  Nets
+
+Primary Inputs:                      Primary Outputs:
+         27  Input Only                        16  Output Only
+          0  Input/Output                       0  Input/Output
+         27  Total Inputs                      16  Total Outputs
+
+Tied Nets:                           Dotted Nets:
+        124  Tied to 0                          0  Two-State
+         65  Tied to 1                          0  Three-State
+          0  Tied to X                          0  Total Dotted Nets
+        189  Total Tied Nets
+
+Selected Primitive Functions:
+          0  Clock Chopper (CHOP) primitives 
+          0  RAMs
+          0  ROMs
+          0  TSDs
+          0  Resistors
+          0  Transistors
+        229  MUX2s
+          0  Latches
+
+
+        129  Rising  Edge Flop w/Set-Dominant and Reset Port
+        129  Total Flops
+
+        522  Technology Library Cell Instances
+
+[end TLM_055] 
+
+Test Function Pin Information for Test Mode:  TDF_LOS
+-------------------------------------------
+
+          2  SC    (System  Clock)             Pins
+          0  PC    (P Shift Clock)             Pins
+          1  EC    (E Shift Clock)             Pins
+
+          0  OSC   (Oscillator)                Pins
+
+          0  TI    (Test Inhibit)              Pins
+          1  SE    (Scan Enable)               Pins
+          0  CI    (Clock Isolation)           Pins
+          0  OI    (Output Inhibit)            Pins
+
+          1  SI    (Scan Input)                Pins
+          1  SO    (Scan Output)               Pins
+
+  Pin Index    Type Test Function                         Pin Name / Net Name
+  ---------    ---- ----------------------------------    -------------------
+         16      PI  +SC                                  rst_n / rst_n
+         13      PI  -EC  -SC                             clk / clk
+          0      PI  +SE                                  SE / SE
+         14      PI   SI                                  dft_sdi_1 / dft_sdi_1
+         27      PO   SO                                  dft_sdo_1 / dft_sdo_1
+
+  
+   Analyze test clocks' control of memory elements    
+
+Analyze test clocks' control of memory elements process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze three-state drivers for contention 
+
+Analyze three-state drivers for contention process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze feedback loops and keeper devices          
+
+Analyze feedback loops and keeper devices process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze clock choppers                             
+
+Analyze clock choppers process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze flip-flop and latch scan characteristics   
+INFO (TSV-068): The length of the longest scan chain is 129 bit positions, which is 100% of the average scan chain length 129 (based on 129 total scan chain bits and 1 valid scan chains).   [end TSV_068] 
+INFO (TSV-378): Scan chain beginning at 'pin dft_sdi_1' and ending at 'pin dft_sdo_1' is controllable and observable. The length of the scan chain is 129 bit positions.   [end TSV_378] 
+INFO (TSV-567): There are 1 controllable scan chains fed by Scan In (SI) primary inputs.   [end TSV_567] 
+INFO (TSV-568): There are 1 observable scan chains feeding to Scan Out (SO) primary outputs.   [end TSV_568] 
+INFO (TSV-569): There are 0 controllable scan chains fed by on-product Pattern Generator(s).   [end TSV_569] 
+INFO (TSV-570): There are 0 observable scan chains feeding to on-product Multiple-Input Signature Register (MISRs).   [end TSV_570] 
+
+Analyze flip-flop and latch scan characteristics process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze explicit fixed value latches 
+
+Analyze explicit fixed value latches process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze potential clock signal races               
+   Check for mutually exclusive gating logic (MEG)    
+
+Analyze potential clock signal races process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+  
+   Analyze internal scan chains 
+
+Analyze channel inputs for validity process has completed.
+                             CPU time =  0:00:00.00  Elapsed time =  0:00:00.00
+
+--------------------File Information----------------------
+          57344 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/TSVmessageFile.TDF_LOS 
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+INFO (TSV-908): verify_test_structures processing complete.   [end TSV_908] 
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =            6,640,144  bytes
+
+                      CPU Time =    0:00:00.02
+                  Elapsed Time =    0:00:05.25                    [end TDA_001]
+
+     Date Ended:  Thursday Nov 19 00:18:35 2026  IST
+
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      1 INFO (TLM-055): Design Summary
+      1 INFO (TSV-068): The length of the longest scan chain is 129 bit positions, which is 100% of the average scan chain length 129 (based on 129 total scan chain bits and 1 valid scan chains).    
+      1 INFO (TSV-378): Scan chain beginning at 'pin dft_sdi_1' and ending at 'pin dft_sdo_1' is controllable and observable. The length of the scan chain is 129 bit positions.    
+      1 INFO (TSV-567): There are 1 controllable scan chains fed by Scan In (SI) primary inputs.    
+      1 INFO (TSV-568): There are 1 observable scan chains feeding to Scan Out (SO) primary outputs.    
+      1 INFO (TSV-569): There are 0 controllable scan chains fed by on-product Pattern Generator(s).    
+      1 INFO (TSV-570): There are 0 observable scan chains feeding to on-product Multiple-Input Signature Register (MISRs).    
+      1 INFO (TSV-900): verify_test_structures processing has started Thu Nov 19 00:18:30 2026     
+      1 INFO (TSV-908): verify_test_structures processing complete.    
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------

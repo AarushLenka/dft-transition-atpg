@@ -1,0 +1,132 @@
+Starting Command: create_logic_delay_tests 
+
+INFO (TDA-005): Command Line Invocation: 
+            create_logic_delay_tests -dynfuncrelease no -testmode TDF_LOS -experiment los_exp -dynseqfilter losintra -workdir /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804  [end TDA_005]
+
+INFO (TDA-014): Cadence(R) Modus(TM) DFT Software Solution, Version 22.10-p008_1, built Oct 18 2022 (linux26_64) [end TDA_014]
+
+INFO (TDA-015): Log File: /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_create_logic_delay_tests_TDF_LOS_los_exp_111926001857-102932000 [end TDA_015]
+
+INFO (TDA-007): Job Information:
+            Date Started: Thursday Nov 19 00:18:57 2026  IST
+            Host machine is cadence-server.vit.ac.in, x86_64 running Linux 4.18.0-477.21.1.el8_8.x86_64.
+            This job is process number 3666436.
+[end TDA_007]
+
+INFO (TDA-009): Options/Values information.
+            (options marked with '*' have program generated values,
+             options marked with '+' were specified to default.)
+
+            -WORKDIR /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804
+            -TESTMODE TDF_LOS
+            -EXPERIMENT los_exp
+
+            -LOGFILE /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/testresults/logs/log_create_logic_delay_tests_TDF_LOS_los_exp_111926001857-102932000
+            -dynseqfilter losintra
+          + -dynfuncrelease no
+[end TDA_009]
+
+
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+Checkout succeeded: modus_atpg/AFEB57679EB0E3011B8F
+	License file: 5280@14.139.1.126
+	License Server: 5280@14.139.1.126
+****************************************************************************************************
+Coverage Definitions:
+ #Faults  : Number of Active Faults (observable).
+ #Tested  : Number of Active Faults marked tested.
+ #Possibly: Number of Active Faults marked possibly tested
+            (good value is 0 or 1; fault value is X).
+ #Redund  : Number of Active Faults untestable due to redundancy.
+ #Untested: Number of Active Faults untested.
+ %TCov  (%Test Coverage)                      : #Tested / #Faults
+ %ATCov (%Adjusted TCov)                      : #Tested / (#Faults-#Redund)
+****************************************************************************************************
+****************************************************************************************************
+                           Testmode Statistics: TDF_LOS
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556         3131            0            0         1425  68.72  68.72
+Total Dynamic                 4164         2805            0            0         1359  67.36  67.36
+
+                            Global Statistics
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556         3131            0            0         1425  68.72  68.72
+Total Dynamic                 4556         2805            0            0         1751  61.57  61.57
+****************************************************************************************************
+
+*************************************************************************************************************
+INFO (TTC-110): Starting Scan Test generation                                                   [end TTC_110] 
+
+INFO (TDA-220):   --- Tests ---   Faults     ---- ATCov ----   -- Faults --   - Elapsed Time -  [end TDA_220] 
+INFO (TDA-220):    Sim.    Eff.  Detected    Tmode    Global     Untested                       [end TDA_220] 
+INFO (TDA-220):      1       1          0    67.36%   61.57%         1359           00:02.75    [end TDA_220] 
+INFO (TTC-110): Ending Scan Test generation                                                     [end TTC_110] 
+*************************************************************************************************************
+
+*************************************************************************************************************
+INFO (TTC-110): Starting Dynamic Logic Test generation                                          [end TTC_110] 
+WARNING:Hostname to IPv4 and IPv6 address lookup failed for the host cadence-c2s
+INFO (TDA-220):     16      16        375    76.37%   69.80%          984           00:02.95    [end TDA_220] 
+INFO (TDA-220):     32      32        117    79.18%   72.37%          867           00:02.99    [end TDA_220] 
+INFO (TDA-220):     48      48         57    80.55%   73.62%          810           00:03.02    [end TDA_220] 
+INFO (TDA-220):     64      63         23    81.10%   74.12%          787           00:03.04    [end TDA_220] 
+INFO (TTC-110): Ending Dynamic Logic Test generation                                            [end TTC_110] 
+*************************************************************************************************************
+
+****************************************************************************************************
+                           Testmode Statistics: TDF_LOS
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556         3631            0            0          925  79.70  79.70
+Total Dynamic                 4164         3377            0            0          787  81.10  81.10
+
+                            Global Statistics
+
+                           #Faults      #Tested    #Possibly      #Redund    #Untested  %TCov %ATCov
+Total Static                  4556         3631            0            0          925  79.70  79.70
+Total Dynamic                 4556         3377            0            0         1179  74.12  74.12
+****************************************************************************************************
+
+
+              ----Final Pattern Statistics----
+
+ Test Section Type                       # Test Sequences
+----------------------------------------------------------
+ Scan                                           1
+ Logic                                          63
+----------------------------------------------------------
+ Total                                          64
+
+(I) File(s) generated (bytes and name):
+
+          77824 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/faultStatus.TDF_LOS.los_exp
+          90149 /home/userdata/23bec0325/dft-projects/dft-transition-atpg/runs/modus-20261119-001804/tbdata/TBDbin.TDF_LOS.los_exp
+
+INFO (TDA-001): Maximum Memory used during the run and Cumulative Time in hours:minutes:seconds:
+
+                  Total Memory =            8,385,072  bytes
+
+                      CPU Time =    0:00:00.31
+                  Elapsed Time =    0:00:03.05                    [end TDA_001]
+
+     Date Ended:  Thursday Nov 19 00:19:00 2026  IST
+
+
+
+
+-------------------------------------------------------------------------------
+*                      Message Summary                                        *
+-------------------------------------------------------------------------------
+ Count  Number             First Instance of Message Text
+------- ------             ------------------------------
+
+  INFO Messages...
+      7 INFO (TDA-220):   --- Tests ---   Faults     ---- ATCov ----   -- Faults --   - Elapsed Time -   
+      4 INFO (TTC-110): Starting Scan Test generation                                                    
+
+ For a detailed explanation of a message and a suggested user response execute 'msgHelp <message id>'.  For example: msgHelp TDA-009
+
+-------------------------------------------------------------------------------
